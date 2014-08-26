@@ -1,6 +1,6 @@
 name := "gremlin-scala-examples"
 
-version := "3.0.0-SNAPSHOT"
+version := "3.0.0-M1"
 
 organization := "com.michaelpollmeier"
 
@@ -16,7 +16,7 @@ scalacOptions ++= Seq(
 incOptions := incOptions.value.withNameHashing(true)
 
 libraryDependencies <++= scalaVersion { scalaVersion =>
-  val gremlinVersion = "3.0.0-SNAPSHOT"
+  val gremlinVersion = "3.0.0.M1"
   Seq(
     "com.michaelpollmeier" %% "gremlin-scala" % gremlinVersion,
     "com.tinkerpop" % "neo4j-gremlin" % gremlinVersion
