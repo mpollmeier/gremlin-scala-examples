@@ -11,7 +11,7 @@ scalacOptions ++= Seq(
   //"-Ydebug"
 )
 
-// net.virtualvoid.sbt.graph.Plugin.graphSettings
+net.virtualvoid.sbt.graph.Plugin.graphSettings
 
 incOptions := incOptions.value.withNameHashing(true)
 
