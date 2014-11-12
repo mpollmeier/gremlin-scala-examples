@@ -11,12 +11,12 @@ scalacOptions ++= Seq(
   //"-Ydebug"
 )
 
-net.virtualvoid.sbt.graph.Plugin.graphSettings
+// net.virtualvoid.sbt.graph.Plugin.graphSettings
 
 incOptions := incOptions.value.withNameHashing(true)
 
 libraryDependencies <++= scalaVersion { scalaVersion =>
-  val gremlinVersion = "3.0.0.M3"
+  val gremlinVersion = "3.0.0.M5"
   Seq(
     "com.michaelpollmeier" %% "gremlin-scala" % gremlinVersion,
     "com.tinkerpop" % "neo4j-gremlin" % gremlinVersion
