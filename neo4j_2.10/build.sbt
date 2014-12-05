@@ -18,7 +18,7 @@ incOptions := incOptions.value.withNameHashing(true)
 libraryDependencies <++= scalaVersion { scalaVersion =>
   val gremlinVersion = "3.0.0.M6"
   Seq(
-    "com.michaelpollmeier" %% "gremlin-scala" % gremlinVersion exclude("org.slf4j", "slf4j-log4j12"),
+    "com.michaelpollmeier" %% "gremlin-scala" % "3.0.0.M6a" exclude("org.slf4j", "slf4j-log4j12"),
     "com.tinkerpop" % "neo4j-gremlin" % gremlinVersion
   )
 }

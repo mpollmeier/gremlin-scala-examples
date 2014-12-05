@@ -35,7 +35,9 @@ object Neo4jIndexExample extends App {
   (1 to vertexCount) foreach { i ⇒
     val name = i.toString
     val nonIndexedString = i.toString
-    graph.addVertex(T.label, "Person", "name", name, "nonIndexedString", nonIndexedString)
+    val vertex = gs.addVertex(label = "Person")
+    vertex.setProperty("name", name)
+    vertex.setProperty("nonIndexedString", nonIndexedString)
   }
 
   println(s"time for lookups of non-indexed vertices: ${timeLookups("nonIndexedString")}ms")
