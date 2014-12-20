@@ -4,21 +4,6 @@ import org.neo4j.graphdb.DynamicLabel
 import scala.util.Random
 import com.tinkerpop.gremlin.process.T
 
-object Neo4jSimpleExample extends App {
-  FileUtils.removeAll("neo4j")
-  val graph: Neo4jGraph = Neo4jGraph.open("neo4j")
-  val gs = GremlinScala(graph)
-
-  (1 to 5) foreach { i ⇒
-    gs.addVertex().setProperty("name", s"vertex $i")
-  }
-
-  val traversal = gs.V.value[String]("name")
-  println(traversal.toList)
-
-  graph.close
-}
-
 // inspired by https://github.com/tinkerpop/tinkerpop3/issues/359#event-197211058
 object Neo4jIndexExample extends App {
   FileUtils.removeAll("neo4j")
@@ -55,16 +40,4 @@ object Neo4jIndexExample extends App {
   }
 
   graph.close
-}
-
-object FileUtils {
-  import java.io.File
-
-  def removeAll(path: String) =
-    listRecursively(new File(path)) foreach { f ⇒
-      if (!f.delete) throw new RuntimeException("Failed to delete " + f.getAbsolutePath)
-    }
-
-  def listRecursively(f: File): Seq[File] =
-    f.listFiles.filter(_.isDirectory).flatMap(listRecursively) ++ f.listFiles
 }

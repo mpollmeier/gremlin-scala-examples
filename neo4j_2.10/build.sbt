@@ -13,7 +13,7 @@ scalacOptions ++= Seq(
 
 net.virtualvoid.sbt.graph.Plugin.graphSettings
 
-incOptions := incOptions.value.withNameHashing(true)
+// incOptions := incOptions.value.withNameHashing(true)
 
 libraryDependencies <++= scalaVersion { scalaVersion =>
   val gremlinVersion = "3.0.0.M6"
