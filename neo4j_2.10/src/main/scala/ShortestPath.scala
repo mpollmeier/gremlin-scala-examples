@@ -3,6 +3,7 @@ import com.tinkerpop.gremlin.scala._
 import org.neo4j.graphdb.DynamicLabel
 import scala.util.Random
 import com.tinkerpop.gremlin.process.T
+import com.tinkerpop.gremlin.process.Traverser
 
 // calculate the shortest path while travelling New Zealand
 // inspired by Stefan Bleibinhaus
@@ -30,31 +31,30 @@ object Neo4jShortestPath extends App {
   addRoad(dargaville, kaikohe, 77)
   addRoad(kaikohe, kerikeri, 36)
 
-  // val routes = auckland.both.both.path//.jump()
-  val routes = auckland.as("a")
-    .both.jump("a", loops = 5, 
-      { v => v.value[String]("name") != "Auckland" }
+  val routes = auckland.as("a").both
+    .jumpWithTraverser(
+      to = "a", 
+      ifPredicate = { t: Traverser[Vertex] ⇒
+        t.loops < 6 &&
+        t.get.value[String]("name") != "Cape Reinga" &&
+        t.get.value[String]("name") != "Auckland"
+      }
     )
-    // .filter(_.value[String]("name") != "Cape Reinga")
+    .filter(_.value[String]("name") == "Cape Reinga")
     .path
   println("all routes from auckland to cape reinga:")
   val allRoutes = routes.toSet
   allRoutes foreach println
+
   println(s"found ${allRoutes.size} routes")
 
-  // routes.toSet foreach println
-  println("")
-
-  // println("shortest route from auckland to cape reinga:")
+  // println("\nshortest route from auckland to cape reinga:")
   // println(routes.orderBy....head)
 
   graph.close
 
-  def addLocation(name: String): ScalaVertex = {
-    val v = gs.addVertex()
-    v.setProperty("name", name)
-    v
-  }
+  def addLocation(name: String): ScalaVertex =
+    gs.addVertex().setProperty("name", name)
 
   def addRoad(from: ScalaVertex, to: ScalaVertex, distance: Int): Unit = 
     from.addEdge(label = "road", to, Map.empty).setProperty("distance", distance)
