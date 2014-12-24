@@ -31,7 +31,7 @@ object Neo4jShortestPath extends App {
   addRoad(dargaville, kaikohe, 77)
   addRoad(kaikohe, kerikeri, 36)
 
-  val routes = auckland.as("a").both
+  val paths = auckland.as("a").both
     .jumpWithTraverser(
       to = "a", 
       ifPredicate = { t: Traverser[Vertex] ⇒
@@ -42,14 +42,14 @@ object Neo4jShortestPath extends App {
     )
     .filter(_.value[String]("name") == "Cape Reinga")
     .path
-  println("all routes from auckland to cape reinga:")
-  val allRoutes = routes.toSet
-  allRoutes foreach println
+  println("all paths from auckland to cape reinga:")
+  val allpaths = paths.toSet
+  allpaths foreach println
 
-  println(s"found ${allRoutes.size} routes")
+  println(s"found ${allpaths.size} paths")
 
-  // println("\nshortest route from auckland to cape reinga:")
-  // println(routes.orderBy....head)
+  // println("\nshortest path from auckland to cape reinga:")
+  // println(paths.orderBy....head)
 
   graph.close
 
