@@ -13,7 +13,7 @@ import org.neo4j.graphdb.DynamicLabel
 // http://bleibinha.us/blog/2013/10/scala-and-graph-databases-with-gremlin-scala
 object Neo4jShortestPath extends App {
   FileUtils.removeAll("neo4j")
-  val graph: Neo4jGraph = Neo4jGraph.open("neo4j")
+  val graph = Neo4jGraph.open("neo4j")
   val gs = GremlinScala(graph)
 
   val auckland = addLocation("Auckland")
