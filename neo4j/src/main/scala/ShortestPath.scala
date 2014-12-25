@@ -32,9 +32,9 @@ object Neo4jShortestPath extends App {
   addRoad(kaikohe, kerikeri, 36)
 
   val paths = auckland.as("a").both
-    .jumpWithTraverser(
+    .jump(
       to = "a", 
-      ifPredicate = { t: Traverser[Vertex] ⇒
+      jumpPredicate = { t: Traverser[Vertex] ⇒
         t.loops < 6 &&
         t.get.value[String]("name") != "Cape Reinga" &&
         t.get.value[String]("name") != "Auckland"
