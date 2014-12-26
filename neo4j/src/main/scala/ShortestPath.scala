@@ -34,7 +34,7 @@ object Neo4jShortestPath extends App {
   addRoad(dargaville, kaikohe, 77)
   addRoad(kaikohe, kerikeri, 36)
 
-  val paths = auckland.as("a").both.jump(
+  val paths = auckland.as("a").bothE.inV.jump(
     to = "a",
     jumpPredicate = { t: Traverser[Vertex] ⇒
       t.loops < 6 &&
@@ -43,17 +43,24 @@ object Neo4jShortestPath extends App {
     }
   ).filter(_.value[String]("name") == "Cape Reinga").path.toList
 
-  val properNames = paths map { p: Path ⇒
-    p.objects map {
+  case class DescriptionAndDistance(description: String, distance: Int)
+
+  val descriptionAndDistances: List[DescriptionAndDistance] = paths map { p: Path ⇒
+    val pathDescription = p.objects collect {
       case v: Vertex ⇒ v.value[String]("name")
-      case other ⇒ other
     } mkString(" -> ")
+
+    val pathTotalKm = p.objects collect {
+      case e: Edge => e.value[Int]("distance")
+    } sum
+    
+    DescriptionAndDistance(pathDescription, pathTotalKm)
   } 
 
   println(s"found ${paths.size} paths from Auckland to Cape Reinga:")
-  properNames foreach println
+  descriptionAndDistances foreach println
 
-  val shortestPath = properNames.sortBy(_.size).head
+  val shortestPath = descriptionAndDistances.sortBy(_.distance).head
   println(s"\nshortest path: $shortestPath")
 
   graph.close
