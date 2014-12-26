@@ -3,7 +3,7 @@
 ## Gremlin-Scala examples
 A collection of example projects and recipies for Gremlin-Scala that you can use as templates. I am always looking for more examples - keep the PRs coming ;)
 
-* [Neo4j Simple Traversal](neo4j/src/main/scala/Simple.scala)
+* [Neo4j Simple Traversal](neo4j/src/main/scala/Simple.scala) - [Blog post](http://www.michaelpollmeier.com/2014/12/27/gremlin-scala-shortest-path/)
 * [Neo4j Indexes](neo4j/src/main/scala/Indexes.scala)
 * [Neo4j Shortest Path](neo4j/src/main/scala/ShortestPath.scala)
 
