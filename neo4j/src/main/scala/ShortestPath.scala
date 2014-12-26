@@ -34,7 +34,7 @@ object Neo4jShortestPath extends App {
   addRoad(dargaville, kaikohe, 77)
   addRoad(kaikohe, kerikeri, 36)
 
-  val paths = auckland.as("a").bothE.inV.jump(
+  val paths = auckland.as("a").outE.inV.jump(
     to = "a",
     jumpPredicate = { t: Traverser[Vertex] ⇒
       t.loops < 6 &&
@@ -68,6 +68,9 @@ object Neo4jShortestPath extends App {
   def addLocation(name: String): ScalaVertex =
     gs.addVertex().setProperty("name", name)
 
-  def addRoad(from: ScalaVertex, to: ScalaVertex, distance: Int): Unit =
+  def addRoad(from: ScalaVertex, to: ScalaVertex, distance: Int): Unit = {
+    // two way road ;)
     from.addEdge(label = "road", to, Map.empty).setProperty("distance", distance)
+    to.addEdge(label = "road", from, Map.empty).setProperty("distance", distance)
+  }
 }
