@@ -1,28 +1,16 @@
-name := "gremlin-scala-examples"
-
+name := "gremlin-scala-examples-neo4j"
+organization := "com.michaelpollmeier"
 version := "1.0.0-SNAPSHOT"
 
-organization := "com.michaelpollmeier"
-
 scalaVersion := "2.10.4" //2.11 doesn't work because neo4j transitively depends on 2.10..
+val gremlinScalaV = "3.0.0.M6c"
+val gremlinV = "3.0.0.M6"
+val scalatestV = "2.2.1"
 
-scalacOptions ++= Seq(
-  //"-Xlog-implicits"
-  //"-Ydebug"
+libraryDependencies ++= Seq(
+  "com.michaelpollmeier" %% "gremlin-scala" % gremlinScalaV exclude("org.slf4j", "slf4j-log4j12"),
+  "com.tinkerpop" % "neo4j-gremlin" % gremlinV,
+  "org.scalatest" %% "scalatest" % scalatestV % "test"
 )
 
 net.virtualvoid.sbt.graph.Plugin.graphSettings
-
-// incOptions := incOptions.value.withNameHashing(true)
-
-libraryDependencies <++= scalaVersion { scalaVersion =>
-  val gremlinVersion = "3.0.0.M6"
-  Seq(
-    "com.michaelpollmeier" %% "gremlin-scala" % "3.0.0.M6c" exclude("org.slf4j", "slf4j-log4j12"),
-    "com.tinkerpop" % "neo4j-gremlin" % gremlinVersion
-  )
-}
-
-resolvers ++= Seq(
-  "Local Maven Repository" at Path.userHome.asFile.toURI.toURL + "/.m2/repository"
-)

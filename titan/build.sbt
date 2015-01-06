@@ -1,19 +1,18 @@
-name := """titan-graphdb-scala-playground"""
-
-version := "1.0"
+name := "gremlin-scala-examples-titan"
+organization := "com.michaelpollmeier"
+version := "1.0.0-SNAPSHOT"
 
 scalaVersion := "2.11.4"
-
+val gremlinScalaV = "3.0.0.M6c"
 val titanV = "0.9.0-M1"
-val gremlinScalaV = "3.0.0.M6a"
-val specs2V = "2.4.15"
+val scalatestV = "2.2.1"
 
 libraryDependencies ++= Seq(
 	"com.thinkaurelius.titan" % "titan-core" % titanV,
 	"com.thinkaurelius.titan" % "titan-cassandra" % titanV,
-	"com.thinkaurelius.titan" % "titan-es" % titanV
+	"com.thinkaurelius.titan" % "titan-es" % titanV,
+  "com.michaelpollmeier" %% "gremlin-scala" % gremlinScalaV,
+  "org.scalatest" %% "scalatest" % scalatestV % "test"
 )
 
-libraryDependencies += "com.michaelpollmeier" %% "gremlin-scala" % gremlinScalaV
-
-libraryDependencies += "org.specs2" %% "specs2-core" % specs2V % "test"
+net.virtualvoid.sbt.graph.Plugin.graphSettings
