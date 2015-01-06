@@ -16,6 +16,11 @@ A collection of example projects and recipies for Gremlin-Scala that you can use
 ## Usage
 First install jdk 8 and configure it to be your `JAVA_HOME` and in your path (check with `echo $JAVA_HOME` and `java -version`). 
 ```
-cd XYZ #e.g. neo4j
+#for neo4j
+cd neo4j
+sbt test
+
+#for titan
+cd titan
 sbt test
 ```
