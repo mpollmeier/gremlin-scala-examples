@@ -19,7 +19,7 @@ class SimpleSpec extends FlatSpec with Matchers with InMemoryConnect {
       val traversal = gs.V.value[String]("name")
       traversal.toList.size shouldBe 6
 
-      gs.V.has(T.label, "saturn").count().head shouldBe 1
+      gs.V.hasT(T.label, "saturn").count().head shouldBe 1
 
       val saturnQ = gs.V.has(T.label, "saturn").head
       saturnQ.property[String]("name").value shouldBe "saturn"
