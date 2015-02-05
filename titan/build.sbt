@@ -2,8 +2,8 @@ name := "gremlin-scala-examples-titan"
 organization := "com.michaelpollmeier"
 version := "1.0.0-SNAPSHOT"
 
-scalaVersion := "2.11.4"
-val gremlinScalaV = "3.0.0.M6c"
+scalaVersion := "2.11.5"
+val gremlinScalaV = "3.0.0.M6c" //can only upgrade to M7 if also upgrading titan - see https://github.com/thinkaurelius/titan/tree/titan09
 val titanV = "0.9.0-M1"
 val scalatestV = "2.2.1"
 
