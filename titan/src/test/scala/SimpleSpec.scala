@@ -1,8 +1,7 @@
-import com.tinkerpop.gremlin.process.T
-import com.tinkerpop.gremlin.scala.GremlinScala
+import org.apache.tinkerpop.gremlin.structure.T
+import gremlin.scala._
 import org.scalatest._
 
-//many thanks to Jacek Laskowski (https://twitter.com/jaceklaskowski) for this contribution
 class SimpleSpec extends FlatSpec with Matchers with InMemoryConnect {
 
   "Gremlin-Scala" should "connect to Titan database, pull out Saturn's keys and shutdown cleanly" in {
@@ -19,10 +18,10 @@ class SimpleSpec extends FlatSpec with Matchers with InMemoryConnect {
       val traversal = gs.V.value[String]("name")
       traversal.toList.size shouldBe 6
 
-      gs.V.has(T.label, "saturn").count().head shouldBe 1
+      gs.V.hasLabel("saturn").count().head shouldBe 1
 
-      val saturnQ = gs.V.has(T.label, "saturn").head
-      saturnQ.property[String]("name").value shouldBe "saturn"
+      val saturnQ = gs.V.hasLabel("saturn").head
+      saturnQ.value[String]("name") shouldBe "saturn"
 
       g.close
   }

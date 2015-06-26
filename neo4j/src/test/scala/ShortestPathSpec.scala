@@ -46,14 +46,36 @@ class ShortestPathSpec extends FlatSpec with Matchers {
     addRoad(dargaville, kaikohe, 77)
     addRoad(kaikohe, kerikeri, 36)
 
-    val paths = auckland.as("a").outE.inV.jump(
-      to = "a",
-      jumpPredicate = { t: Traverser[Vertex] ⇒
-        t.loops < 6 &&
-          t.get.value[String]("name") != "Cape Reinga" &&
-          t.get.value[String]("name") != "Auckland"
+    val paths = auckland
+      //times(7)
+      .emit { t: Traverser[Vertex] ⇒
+        false
+        // true
       }
-    ).filter(_.value[String]("name") == "Cape Reinga").path.toList
+      .until { t: Traverser[Vertex] ⇒
+        println((t.get, t.loops))
+        t.loops > 1 ||
+        t.get.value[String]("name") == "Whangarei"
+
+          // t.get.value[String]("name") == "Whangarei"
+        // t.loops > 6
+        //   (
+        //   t.get.value[String]("name") == "Cape Reinga" ||
+        //   t.get.value[String]("name") != "Auckland"
+        // )
+      }
+      .repeat(_.outE.inV)
+      .path.toList
+      // .filter(_.value[String]("name") == "Cape Reinga").path.toList
+
+    // val paths = auckland.as("a").outE.inV.jump(
+    //   to = "a",
+    //   jumpPredicate = { t: Traverser[Vertex] ⇒
+    //     t.loops < 6 &&
+    //       t.get.value[String]("name") != "Cape Reinga" &&
+    //       t.get.value[String]("name") != "Auckland"
+    //   }
+    // ).filter(_.value[String]("name") == "Cape Reinga").path.toList
 
     case class DescriptionAndDistance(description: String, distance: Int)
 
@@ -65,7 +87,7 @@ class ShortestPathSpec extends FlatSpec with Matchers {
       val pathTotalKm = p.objects collect {
         case e: Edge => e.value[Int]("distance")
       } sum
-      
+
       DescriptionAndDistance(pathDescription, pathTotalKm)
     } 
 

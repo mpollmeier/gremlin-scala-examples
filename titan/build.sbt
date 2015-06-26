@@ -2,9 +2,9 @@ name := "gremlin-scala-examples-titan"
 organization := "com.michaelpollmeier"
 version := "1.0.0-SNAPSHOT"
 
-scalaVersion := "2.11.5"
-val gremlinScalaV = "3.0.0.M6c" //can only upgrade to M7 if also upgrading titan - see https://github.com/thinkaurelius/titan/tree/titan09
-val titanV = "0.9.0-M1"
+scalaVersion := "2.11.7"
+val gremlinScalaV = "3.0.0-SNAPSHOT"
+val titanV = "0.9.0-M2"
 val scalatestV = "2.2.1"
 
 libraryDependencies ++= Seq(
@@ -14,5 +14,4 @@ libraryDependencies ++= Seq(
   "com.michaelpollmeier" %% "gremlin-scala" % gremlinScalaV,
   "org.scalatest" %% "scalatest" % scalatestV % "test"
 )
-
-net.virtualvoid.sbt.graph.Plugin.graphSettings
+resolvers += Resolver.mavenLocal
