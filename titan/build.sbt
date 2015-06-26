@@ -2,9 +2,9 @@ name := "gremlin-scala-examples-titan"
 organization := "com.michaelpollmeier"
 version := "1.0.0-SNAPSHOT"
 
-scalaVersion := "2.11.6"
-val gremlinScalaV = "3.0.0.M7"
-val titanV = "0.9.0-M1"
+scalaVersion := "2.11.7"
+val gremlinScalaV = "3.0.0-SNAPSHOT"
+val titanV = "0.9.0-M2"
 val scalatestV = "2.2.1"
 
 libraryDependencies ++= Seq(
