@@ -163,7 +163,7 @@ class SimpleSpec extends WordSpec with ShouldMatchers {
   }
 
   trait TinkerpopFixture {
-    // val graph = new OrientGraphFactory("remote:localhost/graphtest", "root", "root").getTx()
+    // val graph = new OrientGraphFactory("remote:localhost/graphtest", "root", "root").getNoTx()
     val graph = new OrientGraphFactory(s"memory:test-${math.random}").getNoTx()
     val gs = GremlinScala(graph)
     val sg = ScalaGraph(graph)
@@ -180,11 +180,5 @@ class SimpleSpec extends WordSpec with ShouldMatchers {
     josh.addEdge("created", ripple, Map("weight" -> 1.0d))
     josh.addEdge("created", lop, Map("weight" -> 0.4d))
     peter.addEdge("created", lop, Map("weight" -> 0.2d))
-  }
-
-  trait RemoteGraphFixture {
-    val graph = new OrientGraphFactory("remote:localhost/test", "root", "root").getNoTx()
-    val gs = GremlinScala(graph)
-    val sg = ScalaGraph(graph)
   }
 }
