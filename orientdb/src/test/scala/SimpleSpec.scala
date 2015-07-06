@@ -164,6 +164,7 @@ class SimpleSpec extends WordSpec with ShouldMatchers {
 
   trait TinkerpopFixture {
     // val graph = new OrientGraphFactory("remote:localhost/graphtest", "root", "root").getNoTx()
+    // val graph = new OrientGraphFactory("plocal:/home/mp/tmp/orientdb-community-2.1-rc5/databases/testgraph", "root", "root").getNoTx()
     val graph = new OrientGraphFactory(s"memory:test-${math.random}").getNoTx()
     val gs = GremlinScala(graph)
     val sg = ScalaGraph(graph)
