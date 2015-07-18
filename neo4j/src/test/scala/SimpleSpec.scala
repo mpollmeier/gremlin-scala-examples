@@ -1,5 +1,5 @@
-import com.tinkerpop.gremlin.neo4j.structure.Neo4jGraph
-import com.tinkerpop.gremlin.scala._
+import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph
+import gremlin.scala._
 import org.scalatest._
 
 class SimpleSpec extends FlatSpec with Matchers {

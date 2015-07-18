@@ -1,11 +1,11 @@
 import scala.util.Random
 
 import collection.JavaConversions._
-import com.tinkerpop.gremlin.neo4j.structure.Neo4jGraph
-import com.tinkerpop.gremlin.process.Path
-import com.tinkerpop.gremlin.process.T
-import com.tinkerpop.gremlin.process.Traverser
-import com.tinkerpop.gremlin.scala._
+import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph
+import org.apache.tinkerpop.gremlin.process.Path
+import org.apache.tinkerpop.gremlin.process.T
+import org.apache.tinkerpop.gremlin.process.Traverser
+import gremlin.scala._
 import org.neo4j.graphdb.DynamicLabel
 import org.scalatest._
 
@@ -47,25 +47,21 @@ class ShortestPathSpec extends FlatSpec with Matchers {
     addRoad(kaikohe, kerikeri, 36)
 
     val paths = auckland
-      //times(7)
-      .emit { t: Traverser[Vertex] ⇒
-        false
-        // true
-      }
+      .repeat(_.out)
       .until { t: Traverser[Vertex] ⇒
-        println((t.get, t.loops))
-        t.loops > 1 ||
-        t.get.value[String]("name") == "Whangarei"
-
-          // t.get.value[String]("name") == "Whangarei"
-        // t.loops > 6
+        t.loops > 5 ||
+           t.get.value[String]("name") == "Cape Reinga"
         //   (
         //   t.get.value[String]("name") == "Cape Reinga" ||
         //   t.get.value[String]("name") != "Auckland"
         // )
       }
-      .repeat(_.outE.inV)
+      .emit { _.get.value[String]("name") == "Cape Reinga" }
+      // .times(7)
+      .filter(_.value[String]("name") == "Cape Reinga")
       .path.toList
+
+      paths foreach println
       // .filter(_.value[String]("name") == "Cape Reinga").path.toList
 
     // val paths = auckland.as("a").outE.inV.jump(

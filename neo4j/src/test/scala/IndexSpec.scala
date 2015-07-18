@@ -1,8 +1,8 @@
-import com.tinkerpop.gremlin.neo4j.structure.Neo4jGraph
-import com.tinkerpop.gremlin.scala._
+import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph
+import gremlin.scala._
 import org.neo4j.graphdb.DynamicLabel
 import scala.util.Random
-import com.tinkerpop.gremlin.process.T
+import org.apache.tinkerpop.gremlin.process.T
 import org.scalatest._
 
 // inspired by https://github.com/tinkerpop/tinkerpop3/issues/359#event-197211058
