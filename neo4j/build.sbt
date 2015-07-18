@@ -1,15 +1,12 @@
 name := "gremlin-scala-examples-neo4j"
 organization := "com.michaelpollmeier"
 version := "1.0.0-SNAPSHOT"
-
-scalaVersion := "2.10.4" //2.11 doesn't work because neo4j transitively depends on 2.10..
-val gremlinScalaV = "3.0.0-SNAPSHOT"
-val gremlinV = "3.0.0-SNAPSHOT"
-val scalatestV = "2.2.1"
+scalaVersion := "2.11.7"
 
 libraryDependencies ++= Seq(
-  "com.michaelpollmeier" %% "gremlin-scala" % gremlinScalaV exclude("org.slf4j", "slf4j-log4j12"),
-  "org.apache.tinkerpop" % "neo4j-gremlin" % gremlinV,
-  "org.scalatest" %% "scalatest" % scalatestV % "test"
+  "com.michaelpollmeier" %% "gremlin-scala" % "3.0.0-incubating",
+  "org.apache.tinkerpop" % "neo4j-gremlin" % "3.0.0-incubating",
+  "org.neo4j" % "neo4j-tinkerpop-api-impl" % "0.1-2.2",
+  "org.scalatest" %% "scalatest" % "2.2.5" % "test"
 )
 resolvers += Resolver.mavenLocal
