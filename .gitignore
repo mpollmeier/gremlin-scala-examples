@@ -1,11 +1,11 @@
-neo4j/neo4j
-
 *.class
 *.log
 classes
 .cache
 tags
 .tags
+
+**/.ensime*
 
 # sbt specific
 dist/*
