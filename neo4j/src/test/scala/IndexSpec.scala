@@ -1,23 +1,27 @@
-// import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph
-// import gremlin.scala._
-// import org.neo4j.graphdb.DynamicLabel
-// import scala.util.Random
-// import org.apache.tinkerpop.gremlin.process.T
-// import org.scalatest._
+import gremlin.scala._
+import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph
+import org.apache.tinkerpop.gremlin.process.traversal.Path
+import org.neo4j.graphdb.DynamicLabel
+import scala.util.Random
+import collection.JavaConversions._
+import org.scalatest._
 
-// // inspired by https://github.com/tinkerpop/tinkerpop3/issues/359#event-197211058
-// class IndexSpec extends FlatSpec with Matchers {
-//   "Gremlin-Scala" should "create some vertices with properties" in {
-//     val dbPath = "target/indexspec"
-//     FileUtils.removeAll(dbPath)
-//     val graph: Neo4jGraph = Neo4jGraph.open(dbPath)
-//     val gs = GremlinScala(graph)
+// indices have to be set directly in neo4j nowadays...
+// http://tinkerpop.incubator.apache.org/docs/3.0.0-incubating/#_indices
 
-//     graph.tx.open
-//     val l = DynamicLabel.label("Person")
-//     val s = graph.getBaseGraph.schema
-//     s.indexFor(l).on("name").create
-//     graph.tx.close
+// inspired by https://github.com/tinkerpop/tinkerpop3/issues/359#event-197211058
+class IndexSpec extends FlatSpec with Matchers {
+  "Gremlin-Scala" should "create some vertices with properties" ignore {
+    // val dbPath = "target/indexspec"
+    // FileUtils.removeAll(dbPath)
+    // val graph: Neo4jGraph = Neo4jGraph.open(dbPath)
+    // val gs = GremlinScala(graph)
+
+    // graph.tx.open
+    // val l = DynamicLabel.label("Person")
+    // val s = graph.getBaseGraph.schema
+    // s.indexFor(l).on("name").create
+    // graph.tx.close
 
 //     val vertexCount = 10000
 //     (1 to vertexCount) foreach { i ⇒
@@ -45,6 +49,6 @@
 //     println(s"time for lookups of indexed vertices: ${timeIndexed}ms")
 //     timeIndexed should be < timeNonIndexed
 
-//     graph.close
-//   }
-// }
+    // graph.close
+  }
+}
