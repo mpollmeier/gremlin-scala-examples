@@ -27,7 +27,7 @@ class IndexSpec extends FlatSpec with Matchers {
 //     (1 to vertexCount) foreach { i ⇒
 //       val name = i.toString
 //       val nonIndexedString = i.toString
-//       val vertex = gs.addVertex(label = "Person")
+//       val vertex = s.addVertex(label = "Person")
 //       vertex.setProperty("name", name)
 //       vertex.setProperty("nonIndexedString", nonIndexedString)
 //     }

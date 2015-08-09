@@ -14,9 +14,10 @@ class ShortestPathSpec extends FlatSpec with Matchers {
     FileUtils.removeAll(dbPath)
     val graph: Neo4jGraph = Neo4jGraph.open(dbPath)
     val gs = GremlinScala(graph)
+    val sg = ScalaGraph(graph)
 
     def addLocation(name: String): ScalaVertex =
-      gs.addVertex().setProperty("name", name)
+      sg.addVertex().setProperty("name", name)
 
     def addRoad(from: ScalaVertex, to: ScalaVertex, distance: Int): Unit = {
       // two way road ;)

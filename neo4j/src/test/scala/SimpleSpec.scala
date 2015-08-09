@@ -9,9 +9,10 @@ class SimpleSpec extends FlatSpec with Matchers {
     FileUtils.removeAll(dbPath)
     val graph: Neo4jGraph = Neo4jGraph.open(dbPath)
     val gs = GremlinScala(graph)
+    val sg = ScalaGraph(graph)
 
     (1 to 5) foreach { i ⇒
-      gs.addVertex().setProperty("name", s"vertex $i")
+      sg.addVertex().setProperty("name", s"vertex $i")
     }
 
     val names = gs.V.value[String]("name").toList
