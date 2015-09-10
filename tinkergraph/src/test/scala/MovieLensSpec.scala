@@ -6,10 +6,10 @@ import scala.collection.JavaConversions._
 
 class MovieLensSpec extends WordSpec with Matchers {
 
-  val g: ScalaGraph = {
+  val g: ScalaGraph[TinkerGraph] = {
     val graph = TinkerGraph.open
     graph.io(gryo()).readGraph("src/test/resources/movie-lens.kryo")
-    ScalaGraph(graph)
+    graph.asScala
   }
 
   "loads the graph" in {
@@ -23,7 +23,6 @@ class MovieLensSpec extends WordSpec with Matchers {
     groupCount.get("movie") shouldBe 3546
     groupCount.get("person") shouldBe 6040
     groupCount.get("genre") shouldBe 18
-    // TODO: change return type to Map[String, Long]
   }
 
   // "vertices" should {
