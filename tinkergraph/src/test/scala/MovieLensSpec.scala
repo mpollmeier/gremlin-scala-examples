@@ -8,7 +8,7 @@ class MovieLensSpec extends WordSpec with Matchers {
 
   val g: ScalaGraph = {
     val graph = TinkerGraph.open
-    graph.io(gryo()).readGraph("/tmp/movie-lens.kryo")
+    graph.io(gryo()).readGraph("src/test/resources/movie-lens.kryo")
     ScalaGraph(graph)
   }
 
@@ -18,14 +18,12 @@ class MovieLensSpec extends WordSpec with Matchers {
   }
 
   "gets the groupCount" in {
-    // g.V.label().groupCount.head shouldBe Map("")
-    val groupCount = g.V.label().groupCount.head 
+    val groupCount = g.V.label().groupCount.head
     groupCount.get("occupation") shouldBe 21
     groupCount.get("movie") shouldBe 3546
     groupCount.get("person") shouldBe 6040
     groupCount.get("genre") shouldBe 18
     // TODO: change return type to Map[String, Long]
-    // TODO: change return type to scala map?
   }
 
   // "vertices" should {
