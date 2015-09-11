@@ -18,7 +18,8 @@ class MovieLensSpec extends WordSpec with Matchers {
   }
 
   "for each vertex, emit its label, then group and count each distinct label" in {
-    val groupCount = g.V.label().groupCount.head
+    val groupCount =
+      g.V.label.groupCount.head
     groupCount.get("occupation") shouldBe 21
     groupCount.get("movie") shouldBe 3546
     groupCount.get("person") shouldBe 6040
@@ -26,17 +27,39 @@ class MovieLensSpec extends WordSpec with Matchers {
   }
 
   "for each rated-edge, emit its stars property value and compute the average value" in {
-    val meanStars = g.E.hasLabel("rated").values("stars").mean.head
+    val meanStars =
+      g.E.hasLabel("rated")
+        .values("stars").mean
+        .head
     "%.2f".format(meanStars) shouldBe "3.57"
   }
 
-  "maximum number of movies a single user rated" ignore {
-    val max = g.V.hasLabel("user").map[GremlinScala[java.lang.Long, shapeless.HNil]](_.outE("rated").count).max.head
-    // TODO: fix traversal - doesn't seem to work
-    // val max = g.V.hasLabel("user").map[java.lang.Long](_.outE("rated").count).max.head
-    // TODO: fix type of given traversal
-    // TODO: infer type Long from given traversal
-    // TODO: infer type of max
-    // max shouldBe 2314
+  "maximum number of movies a single user rated" in {
+    val max =
+      g.V.hasLabel("person")
+      .flatMap(_.outE("rated").count)
+      .max[java.lang.Long]
+      .head
+    max shouldBe 2161
+  }
+
+  "what year was the oldest movie made?" in {
+    val min =
+      g.V.hasLabel("movie")
+        .values[Integer]("year")
+        .min[Integer]
+        .head
+    min shouldBe 1919
+  }
+
+  "for each vertex that is labeled 'genre', emit the name property value of that vertex" in {
+    val categories =
+      g.V.hasLabel("genre")
+        .values[String]("name")
+        .toSet
+
+    categories should contain("Animation")
+    categories should contain("Thriller")
+    categories should have size 18
   }
 }
