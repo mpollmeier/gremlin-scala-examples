@@ -1,8 +1,9 @@
 import gremlin.scala._
 import org.apache.tinkerpop.gremlin.structure.io.IoCore.gryo
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph
-import org.scalatest.{ Matchers, WordSpec }
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__
 import scala.collection.JavaConversions._
+import org.scalatest.{ Matchers, WordSpec }
 
 class MovieLensSpec extends WordSpec with Matchers {
 
@@ -12,12 +13,12 @@ class MovieLensSpec extends WordSpec with Matchers {
     graph.asScala
   }
 
-  "loads the graph" in {
+  "Get the vertex and edge counts for the graph" in {
     g.V.count.head shouldBe 9625
     g.E.count.head shouldBe 969719
   }
 
-  "for each vertex, emit its label, then group and count each distinct label" in {
+  "For each vertex, emit its label, then group and count each distinct label" in {
     val groupCount =
       g.V.label.groupCount.head
     groupCount.get("occupation") shouldBe 21
@@ -26,7 +27,7 @@ class MovieLensSpec extends WordSpec with Matchers {
     groupCount.get("genre") shouldBe 18
   }
 
-  "for each rated-edge, emit its stars property value and compute the average value" in {
+  "For each rated-edge, emit its stars property value and compute the average value" in {
     val meanStars =
       g.E.hasLabel("rated")
         .values("stars").mean
@@ -34,25 +35,25 @@ class MovieLensSpec extends WordSpec with Matchers {
     "%.2f".format(meanStars) shouldBe "3.57"
   }
 
-  "maximum number of movies a single user rated" in {
+  "Get the maximum number of movies a single user rated" in {
     val max =
       g.V.hasLabel("person")
       .flatMap(_.outE("rated").count)
-      .max[java.lang.Long]
+      .max
       .head
     max shouldBe 2161
   }
 
-  "what year was the oldest movie made?" in {
+  "What year was the oldest movie made?" in {
     val min =
       g.V.hasLabel("movie")
         .values[Integer]("year")
-        .min[Integer]
+        .min
         .head
     min shouldBe 1919
   }
 
-  "for each vertex that is labeled 'genre', emit the name property value of that vertex" in {
+  "For each vertex that is labeled 'genre', emit the name property value of that vertex" in {
     val categories =
       g.V.hasLabel("genre")
         .values[String]("name")
@@ -61,5 +62,24 @@ class MovieLensSpec extends WordSpec with Matchers {
     categories should contain("Animation")
     categories should contain("Thriller")
     categories should have size 18
+  }
+
+  "For each genre vertex, emit a map of its name and the number of movies it represents" in {
+    val genreMovieCounts =
+      g.V.hasLabel("genre")
+        .as("a", "b")
+        .select("a","b")
+        .by("name")
+        .by(__.inE("hasGenre").count)
+        .toList
+
+    genreMovieCounts should have size 18
+    assertGenreMovieCount("Animation", 99)
+    assertGenreMovieCount("Drama", 1405)
+
+    def assertGenreMovieCount(genre: String, count: Int) = {
+      val map = genreMovieCounts.find(_.get("a") == genre).get
+      map.get("b") shouldBe count
+    }
   }
 }
