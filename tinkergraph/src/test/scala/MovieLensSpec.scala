@@ -3,6 +3,7 @@ import org.apache.tinkerpop.gremlin.structure.io.IoCore.gryo
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__
 import scala.collection.JavaConversions._
+import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.scalatest.{ Matchers, WordSpec }
 
 class MovieLensSpec extends WordSpec with Matchers {
@@ -38,9 +39,9 @@ class MovieLensSpec extends WordSpec with Matchers {
   "Get the maximum number of movies a single user rated" in {
     val max =
       g.V.hasLabel("person")
-      .flatMap(_.outE("rated").count)
-      .max
-      .head
+        .flatMap(_.outE("rated").count)
+        .max
+        .head
     max shouldBe 2161
   }
 
@@ -66,9 +67,8 @@ class MovieLensSpec extends WordSpec with Matchers {
 
   "For each genre vertex, emit a map of its name and the number of movies it represents" in {
     val genreMovieCounts =
-      g.V.hasLabel("genre")
-        .as("a", "b")
-        .select("a","b")
+      g.V.hasLabel("genre").as("a", "b")
+        .select("a", "b")
         .by("name")
         .by(__.inE("hasGenre").count)
         .toList
@@ -80,6 +80,31 @@ class MovieLensSpec extends WordSpec with Matchers {
     def assertGenreMovieCount(genre: String, count: Int) = {
       val map = genreMovieCounts.find(_.get("a") == genre).get
       map.get("b") shouldBe count
+    }
+  }
+
+
+  "For each movie, get its name and mean rating (or 0 if no ratings). Order by average rating and emit top 10." in {
+    val avgRatings =
+      g.V.hasLabel("movie").as("a","b")
+      .select("a","b")
+      .by("name")
+      .by(
+        __.coalesce(
+          __.inE("rated").values("stars"),
+          __.constant(0)
+        ).mean
+      )
+      .order.by(__.select("b"), Order.decr)
+      .limit(10)
+      .toList
+
+    assertMapEntry("Lured", 5)
+    assertMapEntry("Lamerica", 4.75)
+
+    def assertMapEntry(name: String, value: Number) = {
+      val map = avgRatings.find(_.get("a") == name).get
+      map.get("b") shouldBe value
     }
   }
 }
