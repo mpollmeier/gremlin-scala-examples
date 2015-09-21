@@ -2,6 +2,7 @@ import gremlin.scala._
 import org.apache.tinkerpop.gremlin.structure.io.IoCore.gryo
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__
+import org.apache.tinkerpop.gremlin.process.traversal.P
 import scala.collection.JavaConversions._
 import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.scalatest.{ Matchers, WordSpec }
@@ -107,4 +108,25 @@ class MovieLensSpec extends WordSpec with Matchers {
       map.get("b") shouldBe value
     }
   }
+
+  "For each movie with at least 11 ratings, emit a map of its name and average rating. " +
+    "Sort the maps in decreasing order by their average rating. Emit the first 10 maps (i.e. top 10)." in {
+      val avgRatings =
+        g.V.hasLabel("movie").as("a","b")
+        .where(_.inE("rated").count().is(P.gt(10)))
+        .select("a","b")
+        .by("name")
+        .by(__.inE("rated").values("stars").mean())
+        .order.by(__.select("b"), Order.decr)
+        .limit(10)
+        .toList
+
+      assertMapEntry("Sanjuro", 4.61)
+      assertMapEntry("Rear Window", 4.48)
+
+      def assertMapEntry(name: String, value: Double) = {
+        val map = avgRatings.find(_.get("a") == name).get
+        map.get("b").asInstanceOf[Double] shouldBe value +- 0.1
+      }
+    }
 }
