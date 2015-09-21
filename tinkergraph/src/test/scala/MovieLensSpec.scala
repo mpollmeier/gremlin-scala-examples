@@ -5,7 +5,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__
 import org.apache.tinkerpop.gremlin.process.traversal.P
 import scala.collection.JavaConversions._
 import org.apache.tinkerpop.gremlin.process.traversal.Order
-import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.{Matchers, WordSpec}
 
 class MovieLensSpec extends WordSpec with Matchers {
 
@@ -18,6 +18,17 @@ class MovieLensSpec extends WordSpec with Matchers {
   "Get the vertex and edge counts for the graph" in {
     g.V.count.head shouldBe 9625
     g.E.count.head shouldBe 969719
+  }
+
+  "What is Die Hard's average rating?" in {
+    val avgRating =
+      g.V.has("movie", "name", "Die Hard")
+        .inE("rated")
+        .values("stars")
+        .mean
+        .head
+
+    "%.2f".format(avgRating ) shouldBe "4.12"
   }
 
   "For each vertex, emit its label, then group and count each distinct label" in {
@@ -34,6 +45,7 @@ class MovieLensSpec extends WordSpec with Matchers {
       g.E.hasLabel("rated")
         .values("stars").mean
         .head
+
     "%.2f".format(meanStars) shouldBe "3.57"
   }
 
@@ -43,6 +55,7 @@ class MovieLensSpec extends WordSpec with Matchers {
         .flatMap(_.outE("rated").count)
         .max
         .head
+
     max shouldBe 2161
   }
 
@@ -52,6 +65,7 @@ class MovieLensSpec extends WordSpec with Matchers {
         .values[Integer]("year")
         .min
         .head
+
     min shouldBe 1919
   }
 
@@ -84,21 +98,20 @@ class MovieLensSpec extends WordSpec with Matchers {
     }
   }
 
-
   "For each movie, get its name and mean rating (or 0 if no ratings). Order by average rating and emit top 10." in {
     val avgRatings =
-      g.V.hasLabel("movie").as("a","b")
-      .select("a","b")
-      .by("name")
-      .by(
-        __.coalesce(
+      g.V.hasLabel("movie").as("a", "b")
+        .select("a", "b")
+        .by("name")
+        .by(
+          __.coalesce(
           __.inE("rated").values("stars"),
           __.constant(0)
         ).mean
-      )
-      .order.by(__.select("b"), Order.decr)
-      .limit(10)
-      .toList
+        )
+        .order.by(__.select("b"), Order.decr)
+        .limit(10)
+        .toList
 
     assertMapEntry("Lured", 5)
     assertMapEntry("Lamerica", 4.75)
@@ -112,14 +125,14 @@ class MovieLensSpec extends WordSpec with Matchers {
   "For each movie with at least 11 ratings, emit a map of its name and average rating. " +
     "Sort the maps in decreasing order by their average rating. Emit the first 10 maps (i.e. top 10)." in {
       val avgRatings =
-        g.V.hasLabel("movie").as("a","b")
-        .where(_.inE("rated").count().is(P.gt(10)))
-        .select("a","b")
-        .by("name")
-        .by(__.inE("rated").values("stars").mean())
-        .order.by(__.select("b"), Order.decr)
-        .limit(10)
-        .toList
+        g.V.hasLabel("movie").as("a", "b")
+          .where(_.inE("rated").count().is(P.gt(10)))
+          .select("a", "b")
+          .by("name")
+          .by(__.inE("rated").values("stars").mean())
+          .order.by(__.select("b"), Order.decr)
+          .limit(10)
+          .toList
 
       assertMapEntry("Sanjuro", 4.61)
       assertMapEntry("Rear Window", 4.48)
