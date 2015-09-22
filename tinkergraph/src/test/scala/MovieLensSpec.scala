@@ -2,9 +2,8 @@ import gremlin.scala._
 import org.apache.tinkerpop.gremlin.structure.io.IoCore.gryo
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__
-import org.apache.tinkerpop.gremlin.process.traversal.P
+import org.apache.tinkerpop.gremlin.process.traversal.{Order, P, Scope}
 import scala.collection.JavaConversions._
-import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.scalatest.{Matchers, WordSpec}
 
 class MovieLensSpec extends WordSpec with Matchers {
@@ -28,7 +27,7 @@ class MovieLensSpec extends WordSpec with Matchers {
         .mean
         .head
 
-    "%.2f".format(avgRating ) shouldBe "4.12"
+    "%.2f".format(avgRating) shouldBe "4.12"
   }
 
   "For each vertex, emit its label, then group and count each distinct label" in {
@@ -141,5 +140,22 @@ class MovieLensSpec extends WordSpec with Matchers {
         val map = avgRatings.find(_.get("a") == name).get
         map.get("b").asInstanceOf[Double] shouldBe value +- 0.1
       }
+    }
+
+  "Which programmers like Die Hard and what other movies do they like?" +
+    "Group and count the movies by their name. Sort the group count map in decreasing order by the count." in {
+      val counts =
+        g.V.has("movie", "name", "Die Hard").as("a")
+          .inE("rated").has("stars", 5).outV
+          .where(_.out("hasOccupation").has("name", "programmer"))
+          .outE("rated").has("stars", 5).inV
+          .where(P.neq("a"))
+          .groupCount.by("name")
+          .order(Scope.local).by(Order.valueDecr)
+          .limit(Scope.local, 10)
+          .head
+
+      counts.get("Braveheart") shouldBe 24
+      counts.get("Star Wars: Episode V - The Empire Strikes Back") shouldBe 36
     }
 }
