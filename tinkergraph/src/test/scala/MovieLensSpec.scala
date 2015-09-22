@@ -3,6 +3,8 @@ import org.apache.tinkerpop.gremlin.structure.io.IoCore.gryo
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__
 import org.apache.tinkerpop.gremlin.process.traversal.{Order, P, Scope}
+import java.lang.{Long ⇒ JLong, Double ⇒ JDouble}
+import java.util.{Map ⇒ JMap}
 import scala.collection.JavaConversions._
 import org.scalatest.{Matchers, WordSpec}
 
@@ -20,7 +22,7 @@ class MovieLensSpec extends WordSpec with Matchers {
   }
 
   "What is Die Hard's average rating?" in {
-    val avgRating =
+    val avgRating: JDouble =
       g.V.has("movie", "name", "Die Hard")
         .inE("rated")
         .values("stars")
@@ -31,7 +33,7 @@ class MovieLensSpec extends WordSpec with Matchers {
   }
 
   "For each vertex, emit its label, then group and count each distinct label" in {
-    val groupCount =
+    val groupCount: JMap[String, JLong] =
       g.V.label.groupCount.head
     groupCount.get("occupation") shouldBe 21
     groupCount.get("movie") shouldBe 3546
@@ -40,7 +42,7 @@ class MovieLensSpec extends WordSpec with Matchers {
   }
 
   "For each rated-edge, emit its stars property value and compute the average value" in {
-    val meanStars =
+    val meanStars: JDouble =
       g.E.hasLabel("rated")
         .values("stars").mean
         .head
@@ -49,7 +51,7 @@ class MovieLensSpec extends WordSpec with Matchers {
   }
 
   "Get the maximum number of movies a single user rated" in {
-    val max =
+    val max: JLong =
       g.V.hasLabel("person")
         .flatMap(_.outE("rated").count)
         .max
@@ -59,7 +61,7 @@ class MovieLensSpec extends WordSpec with Matchers {
   }
 
   "What year was the oldest movie made?" in {
-    val min =
+    val min: Integer =
       g.V.hasLabel("movie")
         .values[Integer]("year")
         .min
@@ -69,7 +71,7 @@ class MovieLensSpec extends WordSpec with Matchers {
   }
 
   "For each vertex that is labeled 'genre', emit the name property value of that vertex" in {
-    val categories =
+    val categories: Set[String] =
       g.V.hasLabel("genre")
         .values[String]("name")
         .toSet
@@ -144,7 +146,7 @@ class MovieLensSpec extends WordSpec with Matchers {
 
   "Which programmers like Die Hard and what other movies do they like?" +
     "Group and count the movies by their name. Sort the group count map in decreasing order by the count." in {
-      val counts =
+      val counts: JMap[Vertex, JLong] =
         g.V.has("movie", "name", "Die Hard").as("a")
           .inE("rated").has("stars", 5).outV
           .where(_.out("hasOccupation").has("name", "programmer"))
