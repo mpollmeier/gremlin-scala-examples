@@ -152,8 +152,8 @@ class MovieLensSpec extends WordSpec with Matchers {
           .where(_.out("hasOccupation").has("name", "programmer"))
           .outE("rated").has("stars", 5).inV
           .where(P.neq("a"))
+          .map(_.value[String]("name"))
           .groupCount
-          .map(_.map{ case (key, value) => (key.value[String]("name"), value)})
           .order(Scope.local).by(Order.valueDecr)
           .limit(Scope.local, 10)
           .head
