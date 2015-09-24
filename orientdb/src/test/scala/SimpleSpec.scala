@@ -79,7 +79,7 @@ class SimpleSpec extends WordSpec with ShouldMatchers {
       gs.E(e.id).values(key).toList shouldBe List("testValue1")
     }
 
-    "set property during creation" in new Fixture {
+    "set property during creation" taggedAs(org.scalatest.Tag("foo")) ignore new Fixture {
       val v1 = sg.addVertex()
       val v2 = sg.addVertex()
       val property1 = "key1" → "value1"
@@ -158,7 +158,7 @@ class SimpleSpec extends WordSpec with ShouldMatchers {
 
   trait Fixture {
     val graph = new OrientGraphFactory(s"memory:test-${math.random}").getNoTx()
-    val gs = GremlinScala(graph)
+    val gs = graph.asScala
     val sg = ScalaGraph(graph)
   }
 
@@ -166,7 +166,7 @@ class SimpleSpec extends WordSpec with ShouldMatchers {
     // val graph = new OrientGraphFactory("remote:localhost/graphtest", "root", "root").getNoTx()
     // val graph = new OrientGraphFactory("plocal:/home/mp/tmp/orientdb-community-2.1-rc5/databases/testgraph", "root", "root").getNoTx()
     val graph = new OrientGraphFactory(s"memory:test-${math.random}").getNoTx()
-    val gs = GremlinScala(graph)
+    val gs = graph.asScala
     val sg = ScalaGraph(graph)
 
     val marko = sg.addVertex("person", Map("name" -> "marko", "age" -> 29))

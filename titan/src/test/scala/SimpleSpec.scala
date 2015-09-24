@@ -6,7 +6,7 @@ class SimpleSpec extends FlatSpec with Matchers with InMemoryConnect {
 
   "Gremlin-Scala" should "connect to Titan database, pull out Saturn's keys and shutdown cleanly" in {
       val g = connect()
-      val gs = GremlinScala(g)
+      val gs = g.asScala
 
       (1 to 5) foreach { i ⇒
         gs.addVertex().setProperty("name", s"vertex $i")
