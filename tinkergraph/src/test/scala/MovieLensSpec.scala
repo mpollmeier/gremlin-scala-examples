@@ -8,7 +8,17 @@ import java.util.{Map ⇒ JMap}
 import scala.collection.JavaConversions._
 import org.scalatest.{Matchers, WordSpec}
 
+/**
+  * Examples to traverse the MovieLens graph.
+  * [Discussion in usergroup](https://groups.google.com/forum/#!msg/gremlin-users/jtWhwFpqnng/I-juFwyVCAAJ)
+  * Based on [presentation](http://www.slideshare.net/slidarko/the-gremlin-traversal-language) by Marko Rodriguez and Daniel Kuppitz
+  *
+  * Differences fro traversals in their presentation:
+  * 1) edge label 'category' is called 'hasGenre'
+  * 2) edge label 'occupation' is called 'hasOccupation'
+  */
 class MovieLensSpec extends WordSpec with Matchers {
+
 
   val g: ScalaGraph[TinkerGraph] = {
     val graph = TinkerGraph.open
@@ -162,8 +172,28 @@ class MovieLensSpec extends WordSpec with Matchers {
       counts.get("Star Wars: Episode V - The Empire Strikes Back") shouldBe 36
     }
 
-  // "What 80's action movies do 30-something programmers like?" +
-  //   "Group count the movies by their name and sort the group count map in decreasing order by value." in {
-      // val counts: JMap[Verte]
-  //   }
+  "What 80's action movies do 30-something programmers like?" +
+    "Group count the movies by their name and sort the group count map in decreasing order by value." in {
+      val counts: JMap[String, JLong] =
+        g.V
+          .`match`(
+            __.as("a").hasLabel("movie"),
+            __.as("a").out("hasGenre").has("name", "Action"),
+            __.as("a").has("year", P.between(1980, 1990)),
+            __.as("a").inE("rated").as("b"),
+            __.as("b").has("stars", 5),
+            __.as("b").outV().as("c"),
+            __.as("c").out("hasOccupation").has("name", "programmer"),
+            __.as("c").has("age", P.between(30, 40))
+          )
+          .select[Vertex]("a")
+          .map(_.value[String]("name"))
+          .groupCount()
+          .order(Scope.local).by(Order.valueDecr)
+          .limit(Scope.local, 10)
+          .head
+
+      counts.get("Raiders of the Lost Ark") shouldBe 26
+      counts.get("Aliens") shouldBe 18
+    }
 }

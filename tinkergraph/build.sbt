@@ -4,10 +4,9 @@ version := "1.0.0-SNAPSHOT"
 scalaVersion := "2.11.7"
 fork in Test := true
 
-val gremlinVersion = "3.0.1-incubating"
 libraryDependencies ++= Seq(
-  "com.michaelpollmeier" %% "gremlin-scala" % gremlinVersion,
-  "org.apache.tinkerpop" % "tinkergraph-gremlin" % gremlinVersion exclude("org.slf4j", "slf4j-log4j12"),
+  "com.michaelpollmeier" %% "gremlin-scala" % "3.0.2-SNAPSHOT",
+  "org.apache.tinkerpop" % "tinkergraph-gremlin" % "3.0.1-incubating" exclude("org.slf4j", "slf4j-log4j12"),
   "org.scalatest" %% "scalatest" % "2.2.5" % Test
 )
 
