@@ -1,11 +1,14 @@
+import com.orientechnologies.orient.core.metadata.schema.OType
 import com.orientechnologies.orient.core.sql.query.OResultSet
 import gremlin.scala._
 import java.util.{ArrayList => JArrayList}
+import org.apache.commons.configuration.BaseConfiguration
 import org.apache.tinkerpop.gremlin.orientdb._
-import org.scalatest.{ShouldMatchers, WordSpec}
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal
+import org.scalatest.{Matchers, WordSpec}
 import scala.collection.JavaConversions._
 
-class SimpleSpec extends WordSpec with ShouldMatchers {
+class SimpleSpec extends WordSpec with Matchers {
 
   "vertices" should {
     "be found if they exist" in new Fixture {
@@ -48,6 +51,26 @@ class SimpleSpec extends WordSpec with ShouldMatchers {
       labels should contain("V")
       labels should contain("label1")
       labels should contain("label2")
+    }
+
+    "supports vertex indexes" in new Fixture {
+      // this is just an example usage, not really a test with a verification
+      // you can see that it worked in the log output of OrientGraphStep
+      // if you see something like an info of 'index will be queried with' then all is good
+      // if you see 'scanning through all vertices without using an index' then something's wrong
+      val label = "somelabel"
+      val indexedProperty = "indexedProperty"
+      val indexedValue = "indexedValue"
+      val config = new BaseConfiguration()
+      config.setProperty("type", "UNIQUE")
+      config.setProperty("keytype", OType.STRING)
+      sg.asJava.createVertexIndex(indexedProperty, label, config)
+      sg.addVertex(label, indexedProperty -> indexedValue)
+
+      graph.V
+        .hasLabel(label)
+        .has(indexedProperty, indexedValue)
+        .toList should have size 1
     }
   }
 
