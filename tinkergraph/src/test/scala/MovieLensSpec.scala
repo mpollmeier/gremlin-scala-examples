@@ -19,7 +19,6 @@ import org.scalatest.{Matchers, WordSpec}
   */
 class MovieLensSpec extends WordSpec with Matchers {
 
-
   val g: ScalaGraph[TinkerGraph] = {
     val graph = TinkerGraph.open
     graph.io(gryo()).readGraph("src/test/resources/movie-lens.kryo")
@@ -193,7 +192,45 @@ class MovieLensSpec extends WordSpec with Matchers {
           .limit(Scope.local, 10)
           .head
 
-      counts.get("Raiders of the Lost Ark") shouldBe 26
-      counts.get("Aliens") shouldBe 18
+        counts.get("Raiders of the Lost Ark") shouldBe 26
+        counts.get("Star Wars: Episode V - The Empire Strikes Back") shouldBe 26
+        counts.get("Terminator, The") shouldBe 23
+        counts.get("Star Wars: Episode VI - Return of the Jedi") shouldBe 22
+        counts.get("Princess Bride, The") shouldBe 19
+        counts.get("Aliens") shouldBe 18
+        counts.get("Indiana Jones and the Last Crusade") shouldBe 11
+        counts.get("Star Trek: The Wrath of Khan") shouldBe 10
+        counts.get("Abyss, The") shouldBe 9
     }
+
+  "What is the most liked movie in each decade?" in {
+    val counts: JMap[Integer, String] = g.V()
+      .hasLabel("movie")
+      .where(_.inE("rated").count().is(P.gt(10)))
+      .group { v ⇒
+        val year = v.value[Integer]("year")
+        val decade = (year / 10)
+        (decade * 10): Integer
+      }
+      .map { moviesByDecade ⇒
+        val highestRatedByDecade = moviesByDecade.mapValues { movies ⇒
+          movies.toList
+            .sortBy { _.inE("rated").values("stars").mean().head }
+            .reverse.head //get the movie with the highest mean rating
+        }
+        highestRatedByDecade.mapValues(_.value[String]("name"))
+      }
+      .order(Scope.local).by(Order.keyIncr)
+      .head
+
+    counts.get(1910) shouldBe "Daddy Long Legs"
+    counts.get(1920) shouldBe "General, The"
+    counts.get(1930) shouldBe "City Lights"
+    counts.get(1940) shouldBe "Third Man, The"
+    counts.get(1960) shouldBe "Sanjuro"
+    counts.get(1970) shouldBe "Godfather, The"
+    counts.get(1980) shouldBe "Raiders of the Lost Ark"
+    counts.get(1990) shouldBe "Shawshank Redemption, The"
+    counts.get(2000) shouldBe "Almost Famous"
+  }
 }
