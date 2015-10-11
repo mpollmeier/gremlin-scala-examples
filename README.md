@@ -1,7 +1,11 @@
 ![logo](https://github.com/mpollmeier/gremlin-scala/raw/master/doc/images/gremlin-scala-logo.png)
 
 ## Gremlin-Scala examples
-A collection of example projects and recipies for Gremlin-Scala that you can use as templates for your own tinkering. I am always looking for more examples - keep the PRs coming ;)
+A collection of example projects and recipies for Gremlin-Scala that you can use as templates for your own tinkering.
+
+### Tinkergraph
+
+* [MovieLens - a large collection of traversals](tinkergraph/src/test/scala/MovieLensSpec.scala) based on a [presentation by Marko Rodriguez and Daniel Kuppitz](http://www.slideshare.net/slidarko/the-gremlin-traversal-language)
 
 ### OrientDB
 
@@ -20,6 +24,9 @@ A collection of example projects and recipies for Gremlin-Scala that you can use
 ## Usage
 First install jdk 8 and configure it to be your `JAVA_HOME` and in your path (check with `echo $JAVA_HOME` and `java -version`). 
 ```
+cd tinkergraph
+sbt test
+
 cd orientdb
 sbt test
 
