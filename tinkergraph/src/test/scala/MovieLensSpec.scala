@@ -8,6 +8,15 @@ import java.util.{Map ⇒ JMap}
 import scala.collection.JavaConversions._
 import org.scalatest.{Matchers, WordSpec}
 
+/**
+  * Examples to traverse the MovieLens graph.
+  * [Discussion in usergroup](https://groups.google.com/forum/#!msg/gremlin-users/jtWhwFpqnng/I-juFwyVCAAJ)
+  * Based on [presentation](http://www.slideshare.net/slidarko/the-gremlin-traversal-language) by Marko Rodriguez and Daniel Kuppitz
+  *
+  * Differences fro traversals in their presentation:
+  * 1) edge label 'category' is called 'hasGenre'
+  * 2) edge label 'occupation' is called 'hasOccupation'
+  */
 class MovieLensSpec extends WordSpec with Matchers {
 
   val g: ScalaGraph[TinkerGraph] = {
@@ -162,8 +171,66 @@ class MovieLensSpec extends WordSpec with Matchers {
       counts.get("Star Wars: Episode V - The Empire Strikes Back") shouldBe 36
     }
 
-  // "What 80's action movies do 30-something programmers like?" +
-  //   "Group count the movies by their name and sort the group count map in decreasing order by value." in {
-      // val counts: JMap[Verte]
-  //   }
+  "What 80's action movies do 30-something programmers like?" +
+    "Group count the movies by their name and sort the group count map in decreasing order by value." in {
+      val counts: JMap[String, JLong] =
+        g.V
+          .`match`(
+            __.as("a").hasLabel("movie"),
+            __.as("a").out("hasGenre").has("name", "Action"),
+            __.as("a").has("year", P.between(1980, 1990)),
+            __.as("a").inE("rated").as("b"),
+            __.as("b").has("stars", 5),
+            __.as("b").outV().as("c"),
+            __.as("c").out("hasOccupation").has("name", "programmer"),
+            __.as("c").has("age", P.between(30, 40))
+          )
+          .select[Vertex]("a")
+          .map(_.value[String]("name"))
+          .groupCount()
+          .order(Scope.local).by(Order.valueDecr)
+          .limit(Scope.local, 10)
+          .head
+
+        counts.get("Raiders of the Lost Ark") shouldBe 26
+        counts.get("Star Wars: Episode V - The Empire Strikes Back") shouldBe 26
+        counts.get("Terminator, The") shouldBe 23
+        counts.get("Star Wars: Episode VI - Return of the Jedi") shouldBe 22
+        counts.get("Princess Bride, The") shouldBe 19
+        counts.get("Aliens") shouldBe 18
+        counts.get("Indiana Jones and the Last Crusade") shouldBe 11
+        counts.get("Star Trek: The Wrath of Khan") shouldBe 10
+        counts.get("Abyss, The") shouldBe 9
+    }
+
+  "What is the most liked movie in each decade?" in {
+    val counts: JMap[Integer, String] = g.V()
+      .hasLabel("movie")
+      .where(_.inE("rated").count().is(P.gt(10)))
+      .group { v ⇒
+        val year = v.value[Integer]("year")
+        val decade = (year / 10)
+        (decade * 10): Integer
+      }
+      .map { moviesByDecade ⇒
+        val highestRatedByDecade = moviesByDecade.mapValues { movies ⇒
+          movies.toList
+            .sortBy { _.inE("rated").values("stars").mean().head }
+            .reverse.head //get the movie with the highest mean rating
+        }
+        highestRatedByDecade.mapValues(_.value[String]("name"))
+      }
+      .order(Scope.local).by(Order.keyIncr)
+      .head
+
+    counts.get(1910) shouldBe "Daddy Long Legs"
+    counts.get(1920) shouldBe "General, The"
+    counts.get(1930) shouldBe "City Lights"
+    counts.get(1940) shouldBe "Third Man, The"
+    counts.get(1960) shouldBe "Sanjuro"
+    counts.get(1970) shouldBe "Godfather, The"
+    counts.get(1980) shouldBe "Raiders of the Lost Ark"
+    counts.get(1990) shouldBe "Shawshank Redemption, The"
+    counts.get(2000) shouldBe "Almost Famous"
+  }
 }
