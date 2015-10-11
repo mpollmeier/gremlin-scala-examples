@@ -1,15 +1,19 @@
 import gremlin.scala._
+import gremlin.scala.schema._
 import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph
 import org.apache.tinkerpop.gremlin.process.traversal.Path
 import scala.util.Random
 import collection.JavaConversions._
 import org.scalatest._
+import org.apache.tinkerpop.gremlin.process.traversal.P
 
 // calculate the shortest path while travelling New Zealand
-// inspired by http://bleibinha.us/blog/2013/10/scala-and-graph-databases-with-gremlin-scala
-class ShortestPathSpec extends FlatSpec with Matchers {
+// http://www.michaelpollmeier.com/2014/12/27/gremlin-scala-shortest-path/
+class ShortestPathSpec extends WordSpec with Matchers {
+  object Distance extends Key[Int]("distance")
+  val Road = Label("road").value
 
-  "Gremlin-Scala" should "find the shortest path between two vertices" in {
+  "finds the shortest path between two vertices" in {
     val dbPath = "target/shortestpath"
     FileUtils.removeAll(dbPath)
     val graph: Neo4jGraph = Neo4jGraph.open(dbPath)
@@ -21,8 +25,8 @@ class ShortestPathSpec extends FlatSpec with Matchers {
 
     def addRoad(from: ScalaVertex, to: ScalaVertex, distance: Int): Unit = {
       // two way road ;)
-      from.addEdge(label = "road", to, Map("distance" -> distance))
-      to.addEdge(label = "road", from, Map("distance" -> distance))
+      from --- ("road", Distance(distance)) --> to
+      from <-- ("road", Distance(distance)) --- to
     }
 
     val auckland = addLocation("Auckland")
@@ -47,7 +51,6 @@ class ShortestPathSpec extends FlatSpec with Matchers {
 
     val paths = auckland
       .repeat(_.outE.inV)
-      // .times(6)
       .untilWithTraverser { t: Traverser[Vertex] ⇒
         val city = t.get.value[String]("name")
         t.loops > 5 || city == "Cape Reinga" || city == "Auckland"
@@ -57,6 +60,8 @@ class ShortestPathSpec extends FlatSpec with Matchers {
       .path
       .dedup()
       .toList
+    // val paths = auckland.repeat(_.outE.inV.simplePath()).until(is(y)).path().limit(1)
+    // auckland.repeat(_.outE.inV.simplePath).untilWithTraverser(_.get.value[String]("name") == "Cape Reinga").limit(1).path().toList
 
     case class DescriptionAndDistance(description: String, distance: Int)
 
