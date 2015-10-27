@@ -17,7 +17,7 @@ class SimpleSpec extends WordSpec with Matchers {
       val v3 = sg.addVertex()
 
       gs.V(v1.id, v3.id).toList should have length 2
-      gs.V().toList should have length 3
+      gs.V.toList should have length 3
     }
 
     "not be found if they don't exist" in new Fixture {
@@ -59,17 +59,17 @@ class SimpleSpec extends WordSpec with Matchers {
       // if you see something like an info of 'index will be queried with' then all is good
       // if you see 'scanning through all vertices without using an index' then something's wrong
       val label = "somelabel"
-      val indexedProperty = "indexedProperty"
+      val key  = Key[String]("indexedProperty")
       val indexedValue = "indexedValue"
       val config = new BaseConfiguration()
       config.setProperty("type", "UNIQUE")
       config.setProperty("keytype", OType.STRING)
-      sg.asJava.createVertexIndex(indexedProperty, label, config)
-      sg.addVertex(label, indexedProperty -> indexedValue)
+      sg.asJava.createVertexIndex(key.value, label, config)
+      sg + (label, key -> indexedValue)
 
       graph.V
         .hasLabel(label)
-        .has(indexedProperty, indexedValue)
+        .has(key, indexedValue)
         .toList should have size 1
     }
   }

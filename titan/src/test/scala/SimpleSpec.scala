@@ -5,24 +5,24 @@ import org.scalatest._
 class SimpleSpec extends FlatSpec with Matchers with InMemoryConnect {
 
   "Gremlin-Scala" should "connect to Titan database, pull out Saturn's keys and shutdown cleanly" in {
-      val g = connect()
-      val gs = g.asScala
+    val graph = connect().asScala
+    val Name = Key[String]("name")
 
-      (1 to 5) foreach { i ⇒
-        gs.addVertex().setProperty("name", s"vertex $i")
-      }
-      gs.addVertex("saturn", Map("name" -> "saturn"))
+    (1 to 5) foreach { i ⇒
+      graph + ("planet", Name -> s"vertex $i")
+    }
+    graph + ("saturn", Name -> "saturn")
 
-      gs.V.count().head shouldBe 6
+    graph.V.count.head shouldBe 6
 
-      val traversal = gs.V.value[String]("name")
-      traversal.toList.size shouldBe 6
+    val traversal = graph.V.value(Name)
+    traversal.toList.size shouldBe 6
 
-      gs.V.hasLabel("saturn").count().head shouldBe 1
+    graph.V.hasLabel("saturn").count.head shouldBe 1
 
-      val saturnQ = gs.V.hasLabel("saturn").head
-      saturnQ.value[String]("name") shouldBe "saturn"
+    val saturnQ = graph.V.hasLabel("saturn").head
+    saturnQ.value2(Name) shouldBe "saturn"
 
-      g.close
+    graph.close
   }
 }

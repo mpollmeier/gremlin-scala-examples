@@ -18,6 +18,8 @@ import org.scalatest.{Matchers, WordSpec}
   * 2) edge label 'occupation' is called 'hasOccupation'
   */
 class MovieLensSpec extends WordSpec with Matchers {
+  val Name = Key[String]("name")
+  val Stars = Key[Int]("stars")
 
   val g: ScalaGraph[TinkerGraph] = {
     val graph = TinkerGraph.open
@@ -32,7 +34,7 @@ class MovieLensSpec extends WordSpec with Matchers {
 
   "What is Die Hard's average rating?" in {
     val avgRating: JDouble =
-      g.V.has("movie", "name", "Die Hard")
+      g.V.has("movie", Name, "Die Hard")
         .inE("rated")
         .values("stars")
         .mean
@@ -156,10 +158,10 @@ class MovieLensSpec extends WordSpec with Matchers {
   "Which programmers like Die Hard and what other movies do they like?" +
     "Group and count the movies by their name. Sort the group count map in decreasing order by the count." in {
       val counts: JMap[String, JLong] =
-        g.V.has("movie", "name", "Die Hard").as("a")
-          .inE("rated").has("stars", 5).outV
-          .where(_.out("hasOccupation").has("name", "programmer"))
-          .outE("rated").has("stars", 5).inV
+        g.V.has("movie", Name, "Die Hard").as("a")
+          .inE("rated").has(Stars, 5).outV
+          .where(_.out("hasOccupation").has(Name, "programmer"))
+          .outE("rated").has(Stars, 5).inV
           .where(P.neq("a"))
           .map(_.value[String]("name"))
           .groupCount

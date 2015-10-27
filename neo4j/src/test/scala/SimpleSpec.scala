@@ -10,12 +10,13 @@ class SimpleSpec extends FlatSpec with Matchers {
     val graph: Neo4jGraph = Neo4jGraph.open(dbPath)
     val gs = graph.asScala
     val sg = ScalaGraph(graph)
+    val Name = Key[String]("name")
 
     (1 to 5) foreach { i ⇒
-      sg.addVertex().setProperty("name", s"vertex $i")
+      sg + ("some_label", Name -> s"vertex $i")
     }
 
-    val names = gs.V.value[String]("name").toList
+    val names = gs.V.value(Name).toList
     names.size shouldBe 5
     names foreach (_.startsWith("vertex") shouldBe true)
 

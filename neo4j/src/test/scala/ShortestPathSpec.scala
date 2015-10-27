@@ -1,5 +1,4 @@
 import gremlin.scala._
-import gremlin.scala.schema._
 import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph
 import org.apache.tinkerpop.gremlin.process.traversal.Path
 import scala.util.Random
@@ -10,8 +9,10 @@ import org.apache.tinkerpop.gremlin.process.traversal.P
 // calculate the shortest path while travelling New Zealand
 // http://www.michaelpollmeier.com/2014/12/27/gremlin-scala-shortest-path/
 class ShortestPathSpec extends WordSpec with Matchers {
-  object Distance extends Key[Int]("distance")
-  val Road = Label("road").value
+  val Distance = Key[Int]("distance")
+  val Location = "location"
+  val Road = "road"
+  val Name = Key[String]("name")
 
   "finds the shortest path between two vertices" in {
     val dbPath = "target/shortestpath"
@@ -20,13 +21,13 @@ class ShortestPathSpec extends WordSpec with Matchers {
     val gs = graph.asScala
     val sg = ScalaGraph(graph)
 
-    def addLocation(name: String): ScalaVertex =
-      sg.addVertex().setProperty("name", name)
+    def addLocation(name: String): Vertex =
+      sg + (Location, Name -> name)
 
-    def addRoad(from: ScalaVertex, to: ScalaVertex, distance: Int): Unit = {
+    def addRoad(from: Vertex, to: Vertex, distance: Int): Unit = {
       // two way road ;)
-      from --- ("road", Distance(distance)) --> to
-      from <-- ("road", Distance(distance)) --- to
+      from --- ("road", Distance -> distance) --> to
+      from <-- ("road", Distance -> distance) --- to
     }
 
     val auckland = addLocation("Auckland")
@@ -49,7 +50,7 @@ class ShortestPathSpec extends WordSpec with Matchers {
 
     println(s"finding shortest routes from auckland ($auckland) to cape reinga ($capeReinga)")
 
-    val paths = auckland
+    val paths = auckland.asScala
       .repeat(_.outE.inV)
       .untilWithTraverser { t: Traverser[Vertex] ⇒
         val city = t.get.value[String]("name")
