@@ -24,11 +24,11 @@ class SimpleSpec extends WordSpec with ShouldMatchers {
 
     "set property after creation" in new Fixture {
       val v = sg.addVertex()
-      val key = "testProperty"
+      val key = Key[String]("testProperty")
       v.setProperty(key, "testValue1")
 
-      v.property[String](key).value shouldBe "testValue1"
-      gs.V(v.id).values(key).toList shouldBe List("testValue1")
+      v.property(key).value shouldBe "testValue1"
+      gs.V(v.id).value(key).toList shouldBe List("testValue1")
     }
 
     "set property during creation" in new Fixture {
@@ -72,11 +72,11 @@ class SimpleSpec extends WordSpec with ShouldMatchers {
       val v2 = sg.addVertex()
       val e = v1.addEdge("label1", v2)
 
-      val key = "testProperty"
+      val key = Key[String]("testProperty")
       e.setProperty(key, "testValue1")
 
-      e.property[String](key).value shouldBe "testValue1"
-      gs.E(e.id).values(key).toList shouldBe List("testValue1")
+      e.property(key).value shouldBe "testValue1"
+      gs.E(e.id).value(key).toList shouldBe List("testValue1")
     }
 
     "set property during creation" taggedAs(org.scalatest.Tag("foo")) ignore new Fixture {
