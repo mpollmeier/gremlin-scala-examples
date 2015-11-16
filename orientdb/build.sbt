@@ -9,7 +9,7 @@ lazy val root = project.in(file(".")).enablePlugins(PlayScala)
 
 libraryDependencies ++= Seq(
   "com.michaelpollmeier" %% "gremlin-scala" % "3.0.2-incubating",
-  "com.michaelpollmeier" % "orientdb-gremlin" % "3.0.0.M3",
+  "com.michaelpollmeier" % "orientdb-gremlin" % "3.0.0.M7",
   "org.scalatest" %% "scalatest" % "2.2.5" % Test
 )
 resolvers += Resolver.mavenLocal

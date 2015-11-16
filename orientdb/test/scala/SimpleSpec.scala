@@ -9,12 +9,11 @@ import org.scalatest.{Matchers, WordSpec}
 import scala.collection.JavaConversions._
 
 class SimpleSpec extends WordSpec with Matchers {
-
   "vertices" should {
     "be found if they exist" in new Fixture {
-      val v1 = sg.addVertex()
-      val v2 = sg.addVertex()
-      val v3 = sg.addVertex()
+      val v1 = sg + MyLabel
+      val v2 = sg + MyLabel
+      val v3 = sg + MyLabel
 
       gs.V(v1.id, v3.id).toList should have length 2
       gs.V.toList should have length 3
@@ -26,7 +25,7 @@ class SimpleSpec extends WordSpec with Matchers {
     }
 
     "set property after creation" in new Fixture {
-      val v = sg.addVertex()
+      val v = sg + MyLabel
       val key = Key[String]("testProperty")
       v.setProperty(key, "testValue1")
 
@@ -35,20 +34,23 @@ class SimpleSpec extends WordSpec with Matchers {
     }
 
     "set property during creation" in new Fixture {
-      val property1 = "key1" → "value1"
-      val property2 = "key2" → "value2"
-      val v = sg.addVertex(Map(property1, property2))
-      gs.V(v.id).values[String]("key1", "key2").toList shouldBe List("value1", "value2")
+      val Key1 = Key[String]("key1")
+      val Key2 = Key[String]("key2")
+      val v = sg + (MyLabel, Key1 -> "value1", Key2 -> "value2")
+
+      val vertex = gs.V(v.id).head
+      vertex.value2(Key1) shouldBe "value1"
+      vertex.value2(Key2) shouldBe "value2"
     }
 
     "using labels" in new Fixture {
-      val v1 = sg.addVertex("label1")
-      val v2 = sg.addVertex("label2")
+      val v1 = sg + "label1"
+      val v2 = sg + "label2"
       val v3 = sg.addVertex()
 
       val labels = gs.V.label.toSet
-      // labels should have size 3
-      labels should contain("V")
+      labels should have size 3
+
       labels should contain("label1")
       labels should contain("label2")
     }
@@ -58,17 +60,16 @@ class SimpleSpec extends WordSpec with Matchers {
       // you can see that it worked in the log output of OrientGraphStep
       // if you see something like an info of 'index will be queried with' then all is good
       // if you see 'scanning through all vertices without using an index' then something's wrong
-      val label = "somelabel"
       val key  = Key[String]("indexedProperty")
       val indexedValue = "indexedValue"
       val config = new BaseConfiguration()
       config.setProperty("type", "UNIQUE")
       config.setProperty("keytype", OType.STRING)
-      sg.asJava.createVertexIndex(key.value, label, config)
-      sg + (label, key -> indexedValue)
+      sg.asJava.createVertexIndex(key.value, MyLabel, config)
+      sg + (MyLabel, key -> indexedValue)
 
       graph.V
-        .hasLabel(label)
+        .hasLabel(MyLabel)
         .has(key, indexedValue)
         .toList should have size 1
     }
@@ -76,10 +77,10 @@ class SimpleSpec extends WordSpec with Matchers {
 
   "edges" should {
     "be found if they exist" in new Fixture {
-      val v1 = sg.addVertex()
-      val v2 = sg.addVertex()
-      val e1 = v1.addEdge("label1", v2)
-      val e2 = v2.addEdge("label2", v1)
+      val v1 = sg + MyLabel
+      val v2 = sg + MyLabel
+      val e1 = v1 --- "label1" --> v2
+      val e2 = v1 <-- "label2" --- v2
 
       gs.E(e2.id).toList should have length 1
       gs.E().toList should have length 2
@@ -91,24 +92,28 @@ class SimpleSpec extends WordSpec with Matchers {
     }
 
     "set property after creation" in new Fixture {
-      val v1 = sg.addVertex()
-      val v2 = sg.addVertex()
-      val e = v1.addEdge("label1", v2)
+      val v1 = sg + MyLabel
+      val v2 = sg + MyLabel
+      val e = v1 --- "label1" --> v2
 
       val key = Key[String]("testProperty")
       e.setProperty(key, "testValue1")
 
       e.property(key).value shouldBe "testValue1"
-      gs.E(e.id).value(key).toList shouldBe List("testValue1")
+      gs.E(e.id).value(key).head shouldBe "testValue1"
     }
 
-    "set property during creation" taggedAs(org.scalatest.Tag("foo")) ignore new Fixture {
-      val v1 = sg.addVertex()
-      val v2 = sg.addVertex()
-      val property1 = "key1" → "value1"
-      val property2 = "key2" → "value2"
-      val e = v1.addEdge("label1", v2, Map(property1, property2))
-      gs.E(e.id).values[String]("key1", "key2").toList shouldBe List("value1", "value2")
+    "set property during creation" in new Fixture {
+      val Key1 = Key[String]("key1")
+      val Key2 = Key[String]("key2")
+
+      val v1 = sg + MyLabel
+      val v2 = sg + MyLabel
+      v1 --- (MyLabel, Key1 -> "value1", Key2 -> "value2") --> v2
+
+      val e = gs.E.head
+      e.value2(Key1) shouldBe "value1"
+      e.value2(Key2) shouldBe "value2"
     }
   }
 
@@ -127,22 +132,22 @@ class SimpleSpec extends WordSpec with Matchers {
 
     "follow inV" in new TinkerpopFixture {
       def traversal = gs.V(marko.id).outE.inV
-      traversal.value[String]("name").toSet shouldBe Set("vadas", "josh", "lop")
+      traversal.value(Name).toSet shouldBe Set("vadas", "josh", "lop")
     }
 
     "follow out" in new TinkerpopFixture {
       def traversal = gs.V(marko.id).out
-      traversal.value[String]("name").toSet shouldBe Set("vadas", "josh", "lop")
+      traversal.value(Name).toSet shouldBe Set("vadas", "josh", "lop")
     }
 
     "follow out for a label" in new TinkerpopFixture {
       def traversal = gs.V(marko.id).out("knows")
-      traversal.value[String]("name").toSet shouldBe Set("vadas", "josh")
+      traversal.value(Name).toSet shouldBe Set("vadas", "josh")
     }
 
     "follow in" in new TinkerpopFixture {
       def traversal = gs.V(josh.id).in
-      traversal.value[String]("name").toSet shouldBe Set("marko")
+      traversal.value(Name).toSet shouldBe Set("marko")
     }
 
     "follow inE" in new TinkerpopFixture {
@@ -151,7 +156,7 @@ class SimpleSpec extends WordSpec with Matchers {
     }
 
     "value" in new TinkerpopFixture {
-      def traversal = gs.V(marko.id).out.value[Int]("age")
+      def traversal = gs.V(marko.id).out.value(Age)
       traversal.toSet shouldBe Set(27, 32)
     }
 
@@ -161,7 +166,7 @@ class SimpleSpec extends WordSpec with Matchers {
     }
 
     "filter" in new TinkerpopFixture {
-      def traversal = gs.V(marko.id).out.filter(_.property[Int]("age").orElse(0) > 30)
+      def traversal = gs.V(marko.id).out.filter(_.property(Age).orElse(0) > 30)
       traversal.value[String]("name").toSet shouldBe Set("josh")
     }
   }
@@ -180,6 +185,7 @@ class SimpleSpec extends WordSpec with Matchers {
   }
 
   trait Fixture {
+    val MyLabel = "mylabel"
     val graph = new OrientGraphFactory(s"memory:test-${math.random}").getNoTx()
     val gs = graph.asScala
     val sg = ScalaGraph(graph)
@@ -192,17 +198,26 @@ class SimpleSpec extends WordSpec with Matchers {
     val gs = graph.asScala
     val sg = ScalaGraph(graph)
 
-    val marko = sg.addVertex("person", Map("name" -> "marko", "age" -> 29))
-    val vadas = sg.addVertex("person", Map("name" -> "vadas", "age" -> 27))
-    val lop = sg.addVertex("software", Map("name" -> "lop", "lang" -> "java"))
-    val josh = sg.addVertex("person", Map("name" -> "josh", "age" -> 32))
-    val ripple = sg.addVertex("software", Map("name" -> "ripple", "lang" -> "java"))
-    val peter = sg.addVertex("person", Map("name" -> "peter", "age" -> 35))
-    marko.addEdge("knows", vadas, Map("weight" -> 0.5d))
-    marko.addEdge("knows", josh, Map("weight" -> 1.0d))
-    marko.addEdge("created", lop, Map("weight" -> 0.4d))
-    josh.addEdge("created", ripple, Map("weight" -> 1.0d))
-    josh.addEdge("created", lop, Map("weight" -> 0.4d))
-    peter.addEdge("created", lop, Map("weight" -> 0.2d))
+    val Person = "Person"
+    val Software = "Person"
+    val Knows = "knows"
+    val Created = "created"
+    val Name = Key[String]("name")
+    val Age = Key[Int]("age")
+    val Lang = Key[String]("lang")
+    val Weight = Key[Double]("weight")
+
+    val marko = sg + (Person, Name -> "marko", Age -> 29)
+    val vadas = sg + (Person, Name -> "vadas", Age -> 27)
+    val lop = sg + (Software, Name -> "lop", Lang -> "java")
+    val josh = sg + (Person, Name -> "josh", Age -> 32)
+    val ripple = sg + (Software, Name -> "ripple", Lang -> "java")
+    val peter = sg + (Person, Name -> "peter", Age -> 35)
+    marko --- (Knows, Weight -> 0.5d) --> vadas
+    marko --- (Knows, Weight -> 1.0d) --> josh
+    marko --- (Created, Weight -> 0.4d) --> lop
+    josh --- (Created, Weight -> 1.0d) --> ripple
+    josh --- (Created, Weight -> 0.4d) --> lop
+    peter --- (Created, Weight -> 0.2d) --> lop
   }
 }
