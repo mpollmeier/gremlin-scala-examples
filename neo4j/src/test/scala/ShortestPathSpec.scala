@@ -17,12 +17,10 @@ class ShortestPathSpec extends WordSpec with Matchers {
   "finds the shortest path between two vertices" in {
     val dbPath = "target/shortestpath"
     FileUtils.removeAll(dbPath)
-    val graph: Neo4jGraph = Neo4jGraph.open(dbPath)
-    val gs = graph.asScala
-    val sg = ScalaGraph(graph)
+    val graph = Neo4jGraph.open(dbPath).asScala
 
     def addLocation(name: String): Vertex =
-      sg + (Location, Name -> name)
+      graph + (Location, Name -> name)
 
     def addRoad(from: Vertex, to: Vertex, distance: Int): Unit = {
       // two way road ;)
