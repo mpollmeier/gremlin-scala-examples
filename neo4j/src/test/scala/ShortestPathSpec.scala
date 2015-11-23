@@ -9,25 +9,23 @@ import org.apache.tinkerpop.gremlin.process.traversal.P
 // calculate the shortest path while travelling New Zealand
 // http://www.michaelpollmeier.com/2014/12/27/gremlin-scala-shortest-path/
 class ShortestPathSpec extends WordSpec with Matchers {
+  val Name = Key[String]("name")
   val Distance = Key[Int]("distance")
   val Location = "location"
   val Road = "road"
-  val Name = Key[String]("name")
 
   "finds the shortest path between two vertices" in {
     val dbPath = "target/shortestpath"
     FileUtils.removeAll(dbPath)
+    println("opening new graph - this takes a moment with neo4j")
     val graph = Neo4jGraph.open(dbPath).asScala
     println("opened empty graph, setting it up now")
 
     def addLocation(name: String): Vertex =
       graph + (Location, Name -> name)
 
-    def addRoad(from: Vertex, to: Vertex, distance: Int): Unit = {
-      // two way road ;)
-      from --- ("road", Distance -> distance) --> to
-      from <-- ("road", Distance -> distance) --- to
-    }
+    def addRoad(from: Vertex, to: Vertex, distance: Int) =
+      from <-- ("road", Distance -> distance) --> to
 
     val auckland = addLocation("Auckland")
     val whangarei = addLocation("Whangarei")
