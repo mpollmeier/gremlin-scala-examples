@@ -17,33 +17,29 @@ class ShortestPathSpec extends WordSpec with Matchers {
   "finds the shortest path between two vertices" in {
     val dbPath = "target/shortestpath"
     FileUtils.removeAll(dbPath)
-    println("opening new graph - this takes a moment with neo4j")
+    println("opening new empty graph - this takes a moment with neo4j")
     val graph = Neo4jGraph.open(dbPath).asScala
     println("opened empty graph, setting it up now")
 
-    def addLocation(name: String): Vertex =
-      graph + (Location, Name -> name)
+    // format: OFF
+    val auckland   = graph + (Location, Name → "Auckland")
+    val whangarei  = graph + (Location, Name → "Whangarei")
+    val dargaville = graph + (Location, Name → "Dargaville")
+    val kaikohe    = graph + (Location, Name → "Kaikohe")
+    val kerikeri   = graph + (Location, Name → "Kerikeri")
+    val kaitaia    = graph + (Location, Name → "Kaitaia")
+    val capeReinga = graph + (Location, Name → "Cape Reinga")
 
-    def addRoad(from: Vertex, to: Vertex, distance: Int) =
-      from <-- ("road", Distance -> distance) --> to
-
-    val auckland = addLocation("Auckland")
-    val whangarei = addLocation("Whangarei")
-    val dargaville = addLocation("Dargaville")
-    val kaikohe = addLocation("Kaikohe")
-    val kerikeri = addLocation("Kerikeri")
-    val kaitaia = addLocation("Kaitaia")
-    val capeReinga = addLocation("Cape Reinga")
-
-    addRoad(auckland, whangarei, 158)
-    addRoad(whangarei, kaikohe, 85)
-    addRoad(kaikohe, kaitaia, 82)
-    addRoad(kaitaia, capeReinga, 111)
-    addRoad(whangarei, kerikeri, 85)
-    addRoad(kerikeri, kaitaia, 88)
-    addRoad(auckland, dargaville, 175)
-    addRoad(dargaville, kaikohe, 77)
-    addRoad(kaikohe, kerikeri, 36)
+    auckland   <-- (Road, Distance → 158) --> whangarei
+    whangarei  <-- (Road, Distance →  85) --> kaikohe
+    kaikohe    <-- (Road, Distance →  82) --> kaitaia
+    kaitaia    <-- (Road, Distance → 111) --> capeReinga
+    whangarei  <-- (Road, Distance →  85) --> kerikeri
+    kerikeri   <-- (Road, Distance →  88) --> kaitaia
+    auckland   <-- (Road, Distance → 175) --> dargaville
+    dargaville <-- (Road, Distance →  77) --> kaikohe
+    kaikohe    <-- (Road, Distance →  36) --> kerikeri
+    // format: ON
 
     println(s"finding shortest routes from auckland ($auckland) to cape reinga ($capeReinga)")
     val startTime = System.currentTimeMillis
@@ -67,10 +63,10 @@ class ShortestPathSpec extends WordSpec with Matchers {
     val descriptionAndDistances: List[DescriptionAndDistance] = paths map { p: Path ⇒
       val pathDescription = p.objects collect {
         case v: Vertex ⇒ v.value[String]("name")
-      } mkString(" -> ")
+      } mkString (" -> ")
 
       val pathTotalKm = p.objects collect {
-        case e: Edge => e.value[Int]("distance")
+        case e: Edge ⇒ e.value[Int]("distance")
       } sum
 
       DescriptionAndDistance(pathDescription, pathTotalKm)
