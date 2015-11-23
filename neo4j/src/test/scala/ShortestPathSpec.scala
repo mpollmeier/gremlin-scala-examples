@@ -18,6 +18,7 @@ class ShortestPathSpec extends WordSpec with Matchers {
     val dbPath = "target/shortestpath"
     FileUtils.removeAll(dbPath)
     val graph = Neo4jGraph.open(dbPath).asScala
+    println("opened empty graph, setting it up now")
 
     def addLocation(name: String): Vertex =
       graph + (Location, Name -> name)
@@ -47,6 +48,7 @@ class ShortestPathSpec extends WordSpec with Matchers {
     addRoad(kaikohe, kerikeri, 36)
 
     println(s"finding shortest routes from auckland ($auckland) to cape reinga ($capeReinga)")
+    val startTime = System.currentTimeMillis
 
     val paths = auckland.asScala
       .repeat(_.outE.inV)
@@ -83,7 +85,9 @@ class ShortestPathSpec extends WordSpec with Matchers {
     val shortestPath = descriptionAndDistances.sortBy(_.distance).head
     shortestPath.distance shouldBe 436
     shortestPath.description shouldBe "Auckland -> Whangarei -> Kaikohe -> Kaitaia -> Cape Reinga"
+    println("time elapsed: " + (System.currentTimeMillis - startTime) + "ms")
 
+    println("done - closing graph")
     graph.close
   }
 }
