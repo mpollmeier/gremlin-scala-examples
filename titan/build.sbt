@@ -6,7 +6,7 @@ scalaVersion := "2.11.7"
 val titanV = "1.0.0"
 
 libraryDependencies ++= Seq(
-  "com.michaelpollmeier" %% "gremlin-scala" % "3.0.2-incubating.1",
+  "com.michaelpollmeier" %% "gremlin-scala" % "3.1.0-incubating",
 	"com.thinkaurelius.titan" % "titan-core" % titanV,
 	// "com.thinkaurelius.titan" % "titan-cassandra" % titanV,
 	// "com.thinkaurelius.titan" % "titan-es" % titanV,
