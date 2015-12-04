@@ -5,3 +5,6 @@ scala:
   - 2.11.7
 script:
   - cd orientdb ; sbt test
+  - cd ../neo4j ; sbt test
+  - cd ../titan ; sbt test
+  - cd ../tinkergraph ; sbt test
