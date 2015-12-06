@@ -4,6 +4,7 @@ jdk:
 scala:
   - 2.11.7
 script:
+  - export SBT_OPTS="-Xms512M -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled"
   - cd orientdb ; sbt test
   - cd ../neo4j ; sbt test
   - cd ../titan ; sbt test
