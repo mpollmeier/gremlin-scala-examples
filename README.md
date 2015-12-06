@@ -1,4 +1,6 @@
 ![logo](https://github.com/mpollmeier/gremlin-scala/raw/master/doc/images/gremlin-scala-logo.png)
+[![Build Status](https://secure.travis-ci.org/mpollmeier/gremlin-scala-examples.png?branch=master)](http://travis-ci.org/mpollmeier/gremlin-scala-examples)
+ [![Join the chat at https://gitter.im/mpollmeier/gremlin-scala](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mpollmeier/gremlin-scala?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## Gremlin-Scala examples
 A collection of example projects and recipies for Gremlin-Scala that you can use as templates for your own tinkering.
