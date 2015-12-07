@@ -45,21 +45,14 @@ class ShortestPathSpec extends WordSpec with Matchers {
     val startTime = System.currentTimeMillis
 
     val paths = auckland.asScala
-      .repeat(_.outE.inV)
-      .untilWithTraverser { t: Traverser[Vertex] ⇒
-        val city = t.get.value[String]("name")
-        t.loops > 5 || city == "Cape Reinga" || city == "Auckland"
-      }
-      .emit()
-      .filter(_.value[String]("name") == "Cape Reinga")
+      .repeat(_.outE.inV.simplePath)
+      .until(_.is(capeReinga.vertex))
       .path
-      .dedup()
       .toList
-    // val paths = auckland.repeat(_.outE.inV.simplePath()).until(is(y)).path().limit(1)
-    // auckland.repeat(_.outE.inV.simplePath).untilWithTraverser(_.get.value[String]("name") == "Cape Reinga").limit(1).path().toList
+
+    println("time elapsed: " + (System.currentTimeMillis - startTime) + "ms")
 
     case class DescriptionAndDistance(description: String, distance: Int)
-
     val descriptionAndDistances: List[DescriptionAndDistance] = paths map { p: Path ⇒
       val pathDescription = p.objects collect {
         case v: Vertex ⇒ v.value[String]("name")
@@ -74,14 +67,25 @@ class ShortestPathSpec extends WordSpec with Matchers {
 
     println(s"Paths from Auckland to Cape Reinga:")
     descriptionAndDistances foreach println
-    descriptionAndDistances.size shouldBe 23
 
     val shortestPath = descriptionAndDistances.sortBy(_.distance).head
     shortestPath.distance shouldBe 436
     shortestPath.description shouldBe "Auckland -> Whangarei -> Kaikohe -> Kaitaia -> Cape Reinga"
-    println("time elapsed: " + (System.currentTimeMillis - startTime) + "ms")
 
     println("done - closing graph")
     graph.close
   }
 }
+
+// old version, more explicit on what's happening:
+// val paths = auckland.asScala
+//   .repeat(_.outE.inV)
+//   .untilWithTraverser { t: Traverser[Vertex] ⇒
+//     val city = t.get.value[String]("name")
+//     t.loops > 5 || city == "Cape Reinga" || city == "Auckland"
+//   }
+//   .emit()
+//   .filter(_.value[String]("name") == "Cape Reinga")
+//   .path
+//   .dedup()
+//   .toList
