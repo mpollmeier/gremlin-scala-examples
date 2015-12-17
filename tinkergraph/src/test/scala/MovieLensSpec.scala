@@ -7,6 +7,7 @@ import java.lang.{Long ⇒ JLong, Double ⇒ JDouble}
 import java.util.{Map ⇒ JMap}
 import scala.collection.JavaConversions._
 import org.scalatest.{Matchers, WordSpec}
+import shapeless.HNil
 
 /**
   * Examples to traverse the MovieLens graph.
@@ -58,6 +59,7 @@ class MovieLensSpec extends WordSpec with Matchers {
   "For each vertex, emit its label, then group and count each distinct label" in {
     val groupCount: JMap[String, JLong] =
       g.V.label.groupCount.head
+
     groupCount.get(Occupation) shouldBe 21
     groupCount.get(Movie) shouldBe 3546
     groupCount.get(Person) shouldBe 6040
@@ -74,7 +76,7 @@ class MovieLensSpec extends WordSpec with Matchers {
   }
 
   "Get the maximum number of movies a single user rated" in {
-    val ratedCounts =
+    val ratedCounts: GremlinScala[Long, HNil] =
       for {
         person ← g.V.hasLabel(Person)
         count ← person.outE(Rated).count
@@ -86,8 +88,7 @@ class MovieLensSpec extends WordSpec with Matchers {
   "What year was the oldest movie made?" in {
     val min: Integer =
       g.V.hasLabel(Movie)
-        .value(Year)
-        .min
+        .value(Year).min
         .head
 
     min shouldBe 1919
