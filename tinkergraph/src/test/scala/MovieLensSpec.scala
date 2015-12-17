@@ -106,21 +106,16 @@ class MovieLensSpec extends WordSpec with Matchers {
   }
 
   "For each genre vertex, emit a map of its name and the number of movies it represents" in {
-    val genreMovieCounts =
-      g.V.hasLabel(Genre).as("a", "b")
-        .select("a", "b")
-        .by("name")
-        .by(__.inE(HasGenre).count)
-        .toList
+    val traversal = for {
+      genre ← g.V.hasLabel(Genre)
+      count ← genre.start.inE(HasGenre).count
+    } yield (genre.value2(Name), count)
+
+    val genreMovieCounts = traversal.toList.toMap
 
     genreMovieCounts should have size 18
-    assertGenreMovieCount("Animation", 99)
-    assertGenreMovieCount("Drama", 1405)
-
-    def assertGenreMovieCount(genre: String, count: Int) = {
-      val map = genreMovieCounts.find(_.get("a") == genre).get
-      map.get("b") shouldBe count
-    }
+    genreMovieCounts should contain ("Animation" -> 99)
+    genreMovieCounts should contain ("Drama" -> 1405)
   }
 
   "For each movie, get its name and mean rating (or 0 if no ratings). Order by average rating and emit top 10." in {
