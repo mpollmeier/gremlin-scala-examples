@@ -75,13 +75,13 @@ class MovieLensSpec extends WordSpec with Matchers {
   }
 
   "Get the maximum number of movies a single user rated" in {
-    val max: JLong =
-      g.V.hasLabel(Person)
-        .flatMap(_.outE(Rated).count)
-        .max
-        .head
+    val ratedCounts =
+      for {
+        person <- g.V.hasLabel(Person)
+        count <- person.outE(Rated).count
+      } yield count
 
-    max shouldBe 2161
+    ratedCounts.max.head shouldBe 2161
   }
 
   "What year was the oldest movie made?" in {
