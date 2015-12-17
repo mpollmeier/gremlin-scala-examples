@@ -22,7 +22,6 @@ class MovieLensSpec extends WordSpec with Matchers {
   val Stars = Key[Int]("stars")
   val Year = Key[Int]("year")
 
-
   object Label {
     val Person = "person"
     val Movie = "movie"
@@ -77,8 +76,8 @@ class MovieLensSpec extends WordSpec with Matchers {
   "Get the maximum number of movies a single user rated" in {
     val ratedCounts =
       for {
-        person <- g.V.hasLabel(Person)
-        count <- person.outE(Rated).count
+        person ← g.V.hasLabel(Person)
+        count ← person.outE(Rated).count
       } yield count
 
     ratedCounts.max.head shouldBe 2161
@@ -207,15 +206,15 @@ class MovieLensSpec extends WordSpec with Matchers {
           .limit(Scope.local, 10)
           .head
 
-        counts.get("Raiders of the Lost Ark") shouldBe 26
-        counts.get("Star Wars: Episode V - The Empire Strikes Back") shouldBe 26
-        counts.get("Terminator, The") shouldBe 23
-        counts.get("Star Wars: Episode VI - Return of the Jedi") shouldBe 22
-        counts.get("Princess Bride, The") shouldBe 19
-        counts.get("Aliens") shouldBe 18
-        counts.get("Indiana Jones and the Last Crusade") shouldBe 11
-        counts.get("Star Trek: The Wrath of Khan") shouldBe 10
-        counts.get("Abyss, The") shouldBe 9
+      counts.get("Raiders of the Lost Ark") shouldBe 26
+      counts.get("Star Wars: Episode V - The Empire Strikes Back") shouldBe 26
+      counts.get("Terminator, The") shouldBe 23
+      counts.get("Star Wars: Episode VI - Return of the Jedi") shouldBe 22
+      counts.get("Princess Bride, The") shouldBe 19
+      counts.get("Aliens") shouldBe 18
+      counts.get("Indiana Jones and the Last Crusade") shouldBe 11
+      counts.get("Star Trek: The Wrath of Khan") shouldBe 10
+      counts.get("Abyss, The") shouldBe 9
     }
 
   // TODO: fix - group step behaviour changed
