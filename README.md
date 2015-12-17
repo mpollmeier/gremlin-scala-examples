@@ -3,7 +3,7 @@
  [![Join the chat at https://gitter.im/mpollmeier/gremlin-scala](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mpollmeier/gremlin-scala?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## Gremlin-Scala examples
-A collection of example projects and recipies for Gremlin-Scala that you can use as templates for your own tinkering.
+A collection of example projects and recipies for [Gremlin-Scala](https://github.com/mpollmeier/gremlin-scala) that you can use as templates for your own tinkering.
 
 ### Tinkergraph
 
