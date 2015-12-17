@@ -7,6 +7,7 @@ import java.lang.{Long ⇒ JLong, Double ⇒ JDouble}
 import java.util.{Map ⇒ JMap}
 import scala.collection.JavaConversions._
 import org.scalatest.{Matchers, WordSpec}
+import shapeless.HNil
 
 /**
   * Examples to traverse the MovieLens graph.
@@ -20,6 +21,18 @@ import org.scalatest.{Matchers, WordSpec}
 class MovieLensSpec extends WordSpec with Matchers {
   val Name = Key[String]("name")
   val Stars = Key[Int]("stars")
+  val Year = Key[Int]("year")
+
+  object Label {
+    val Person = "person"
+    val Movie = "movie"
+    val Occupation = "occupation"
+    val HasOccupation = "hasOccupation"
+    val Genre = "genre"
+    val HasGenre = "hasGenre"
+    val Rated = "rated"
+  }
+  import Label._
 
   val g: ScalaGraph[TinkerGraph] = {
     val graph = TinkerGraph.open
@@ -34,9 +47,9 @@ class MovieLensSpec extends WordSpec with Matchers {
 
   "What is Die Hard's average rating?" in {
     val avgRating: JDouble =
-      g.V.has("movie", Name, "Die Hard")
-        .inE("rated")
-        .values("stars")
+      g.V.has(Movie, Name, "Die Hard")
+        .inE(Rated)
+        .value(Stars)
         .mean
         .head
 
@@ -46,36 +59,36 @@ class MovieLensSpec extends WordSpec with Matchers {
   "For each vertex, emit its label, then group and count each distinct label" in {
     val groupCount: JMap[String, JLong] =
       g.V.label.groupCount.head
-    groupCount.get("occupation") shouldBe 21
-    groupCount.get("movie") shouldBe 3546
-    groupCount.get("person") shouldBe 6040
-    groupCount.get("genre") shouldBe 18
+
+    groupCount.get(Occupation) shouldBe 21
+    groupCount.get(Movie) shouldBe 3546
+    groupCount.get(Person) shouldBe 6040
+    groupCount.get(Genre) shouldBe 18
   }
 
   "For each rated-edge, emit its stars property value and compute the average value" in {
     val meanStars: JDouble =
-      g.E.hasLabel("rated")
-        .values("stars").mean
+      g.E.hasLabel(Rated)
+        .value(Stars).mean
         .head
 
     "%.2f".format(meanStars) shouldBe "3.57"
   }
 
   "Get the maximum number of movies a single user rated" in {
-    val max: JLong =
-      g.V.hasLabel("person")
-        .flatMap(_.outE("rated").count)
-        .max
-        .head
+    val ratedCounts: GremlinScala[Long, HNil] =
+      for {
+        person ← g.V.hasLabel(Person)
+        count ← person.outE(Rated).count
+      } yield count
 
-    max shouldBe 2161
+    ratedCounts.max.head shouldBe 2161
   }
 
   "What year was the oldest movie made?" in {
     val min: Integer =
-      g.V.hasLabel("movie")
-        .values[Integer]("year")
-        .min
+      g.V.hasLabel(Movie)
+        .value(Year).min
         .head
 
     min shouldBe 1919
@@ -83,8 +96,8 @@ class MovieLensSpec extends WordSpec with Matchers {
 
   "For each vertex that is labeled 'genre', emit the name property value of that vertex" in {
     val categories: Set[String] =
-      g.V.hasLabel("genre")
-        .values[String]("name")
+      g.V.hasLabel(Genre)
+        .value(Name)
         .toSet
 
     categories should contain("Animation")
@@ -94,10 +107,10 @@ class MovieLensSpec extends WordSpec with Matchers {
 
   "For each genre vertex, emit a map of its name and the number of movies it represents" in {
     val genreMovieCounts =
-      g.V.hasLabel("genre").as("a", "b")
+      g.V.hasLabel(Genre).as("a", "b")
         .select("a", "b")
         .by("name")
-        .by(__.inE("hasGenre").count)
+        .by(__.inE(HasGenre).count)
         .toList
 
     genreMovieCounts should have size 18
@@ -112,12 +125,12 @@ class MovieLensSpec extends WordSpec with Matchers {
 
   "For each movie, get its name and mean rating (or 0 if no ratings). Order by average rating and emit top 10." in {
     val avgRatings =
-      g.V.hasLabel("movie").as("a", "b")
+      g.V.hasLabel(Movie).as("a", "b")
         .select("a", "b")
         .by("name")
         .by(
           __.coalesce(
-          __.inE("rated").values("stars"),
+          __.inE(Rated).values("stars"),
           __.constant(0)
         ).mean
         )
@@ -137,11 +150,11 @@ class MovieLensSpec extends WordSpec with Matchers {
   "For each movie with at least 11 ratings, emit a map of its name and average rating. " +
     "Sort the maps in decreasing order by their average rating. Emit the first 10 maps (i.e. top 10)." in {
       val avgRatings: List[JMap[String, Any]] =
-        g.V.hasLabel("movie").as("a", "b")
-          .where(_.inE("rated").count().is(P.gt(10)))
+        g.V.hasLabel(Movie).as("a", "b")
+          .where(_.inE(Rated).count().is(P.gt(10)))
           .select("a", "b")
           .by("name")
-          .by(__.inE("rated").values("stars").mean())
+          .by(__.inE(Rated).values("stars").mean())
           .order.by(__.select("b"), Order.decr)
           .limit(10)
           .toList
@@ -158,12 +171,12 @@ class MovieLensSpec extends WordSpec with Matchers {
   "Which programmers like Die Hard and what other movies do they like?" +
     "Group and count the movies by their name. Sort the group count map in decreasing order by the count." in {
       val counts: JMap[String, JLong] =
-        g.V.has("movie", Name, "Die Hard").as("a")
-          .inE("rated").has(Stars, 5).outV
-          .where(_.out("hasOccupation").has(Name, "programmer"))
-          .outE("rated").has(Stars, 5).inV
+        g.V.has(Movie, Name, "Die Hard").as("a")
+          .inE(Rated).has(Stars, 5).outV
+          .where(_.out(HasOccupation).has(Name, "programmer"))
+          .outE(Rated).has(Stars, 5).inV
           .where(P.neq("a"))
-          .map(_.value[String]("name"))
+          .map(_.value2(Name))
           .groupCount
           .order(Scope.local).by(Order.valueDecr)
           .limit(Scope.local, 10)
@@ -178,13 +191,13 @@ class MovieLensSpec extends WordSpec with Matchers {
       val counts: JMap[String, JLong] =
         g.V
           .`match`(
-            __.as("a").hasLabel("movie"),
-            __.as("a").out("hasGenre").has("name", "Action"),
+            __.as("a").hasLabel(Movie),
+            __.as("a").out(HasGenre).has("name", "Action"),
             __.as("a").has("year", P.between(1980, 1990)),
-            __.as("a").inE("rated").as("b"),
+            __.as("a").inE(Rated).as("b"),
             __.as("b").has("stars", 5),
             __.as("b").outV().as("c"),
-            __.as("c").out("hasOccupation").has("name", "programmer"),
+            __.as("c").out(HasOccupation).has("name", "programmer"),
             __.as("c").has("age", P.between(30, 40))
           )
           .select[Vertex]("a")
@@ -194,34 +207,34 @@ class MovieLensSpec extends WordSpec with Matchers {
           .limit(Scope.local, 10)
           .head
 
-        counts.get("Raiders of the Lost Ark") shouldBe 26
-        counts.get("Star Wars: Episode V - The Empire Strikes Back") shouldBe 26
-        counts.get("Terminator, The") shouldBe 23
-        counts.get("Star Wars: Episode VI - Return of the Jedi") shouldBe 22
-        counts.get("Princess Bride, The") shouldBe 19
-        counts.get("Aliens") shouldBe 18
-        counts.get("Indiana Jones and the Last Crusade") shouldBe 11
-        counts.get("Star Trek: The Wrath of Khan") shouldBe 10
-        counts.get("Abyss, The") shouldBe 9
+      counts.get("Raiders of the Lost Ark") shouldBe 26
+      counts.get("Star Wars: Episode V - The Empire Strikes Back") shouldBe 26
+      counts.get("Terminator, The") shouldBe 23
+      counts.get("Star Wars: Episode VI - Return of the Jedi") shouldBe 22
+      counts.get("Princess Bride, The") shouldBe 19
+      counts.get("Aliens") shouldBe 18
+      counts.get("Indiana Jones and the Last Crusade") shouldBe 11
+      counts.get("Star Trek: The Wrath of Khan") shouldBe 10
+      counts.get("Abyss, The") shouldBe 9
     }
 
   // TODO: fix - group step behaviour changed
   "What is the most liked movie in each decade?" ignore {
     val counts: JMap[Integer, String] = g.V()
-      .hasLabel("movie")
-      .where(_.inE("rated").count().is(P.gt(10)))
+      .hasLabel(Movie)
+      .where(_.inE(Rated).count().is(P.gt(10)))
       .group { v ⇒
-        val year = v.value[Integer]("year")
+        val year = v.value2(Year)
         val decade = (year / 10)
         (decade * 10): Integer
       }
       .map { moviesByDecade ⇒
         val highestRatedByDecade = moviesByDecade.mapValues { movies ⇒
           movies.toList
-            .sortBy { _.inE("rated").values("stars").mean().head }
+            .sortBy { _.inE(Rated).value(Stars).mean().head }
             .reverse.head //get the movie with the highest mean rating
         }
-        highestRatedByDecade.mapValues(_.value[String]("name"))
+        highestRatedByDecade.mapValues(_.value2(Name))
       }
       .order(Scope.local).by(Order.keyIncr)
       .head
