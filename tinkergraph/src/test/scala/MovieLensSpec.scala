@@ -111,7 +111,7 @@ class MovieLensSpec extends WordSpec with Matchers {
       count ← genre.start.inE(HasGenre).count
     } yield (genre.value2(Name), count)
 
-    val genreMovieCounts = traversal.toList.toMap
+    val genreMovieCounts = traversal.toMap
 
     genreMovieCounts should have size 18
     genreMovieCounts should contain("Animation" → 99)
@@ -124,7 +124,7 @@ class MovieLensSpec extends WordSpec with Matchers {
       stars ← movie.start.inE(Rated).value(Stars).mean
     } yield (movie.value2(Name), stars)
 
-    val avgRatings = traversal.toList.toMap
+    val avgRatings = traversal.toMap
 
     avgRatings should contain("Lured" → 5)
     avgRatings should contain("Lamerica" → 4.75)
@@ -141,7 +141,7 @@ class MovieLensSpec extends WordSpec with Matchers {
       val top10 = movieAndRatings
         .orderBy(_._2, Order.decr)
         .limit(10)
-        .toList.toMap
+        .toMap
 
       top10("Sanjuro").toDouble shouldBe 4.61 +- 0.1d
       top10("Rear Window").toDouble shouldBe 4.48 +- 0.1d
