@@ -149,20 +149,20 @@ class MovieLensSpec extends WordSpec with Matchers {
 
   "Which programmers like Die Hard and what other movies do they like?" +
     "Group and count the movies by their name. Sort the group count map in decreasing order by the count." in {
-      val counts: JMap[String, JLong] =
-        g.V.has(Movie, Name, "Die Hard").as("a")
-          .inE(Rated).has(Stars, 5).outV
-          .where(_.out(HasOccupation).has(Name, "programmer"))
-          .outE(Rated).has(Stars, 5).inV
-          .where(P.neq("a"))
-          .map(_.value2(Name))
-          .groupCount
-          .order(Scope.local).by(Order.valueDecr)
-          .limit(Scope.local, 10)
-          .head
+      val dieHard: Vertex = g.V.has(Movie, Name, "Die Hard").head
 
-      counts.get("Braveheart") shouldBe 24
-      counts.get("Star Wars: Episode V - The Empire Strikes Back") shouldBe 36
+      val popularMovies = for {
+        programmer5Stars <- dieHard.start.inE(Rated).has(Stars, 5).outV
+                            .where(_.out(HasOccupation).has(Name, "programmer"))
+        otherMovie <-  programmer5Stars.start.outE(Rated).has(Stars, 5).inV
+                          .filterNot(_ == dieHard)
+      } yield otherMovie.value2(Name)
+
+      val counts: Map[String, JLong] = popularMovies.groupCount.head.toMap
+      val top10 = counts.toList.sortBy(_._2).reverse.take(10).toMap
+
+      counts("Braveheart") shouldBe 24
+      counts("Star Wars: Episode V - The Empire Strikes Back") shouldBe 36
     }
 
   "What 80's action movies do 30-something programmers like?" +
