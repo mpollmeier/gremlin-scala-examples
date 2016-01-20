@@ -134,35 +134,17 @@ class MovieLensSpec extends WordSpec with Matchers {
     "Sort the maps in decreasing order by their average rating. Emit the first 10 maps (i.e. top 10)." in {
       val movieAndRatings = for {
         movie ← g.V.hasLabel(Movie)
+                  .where(_.inE(Rated).count().is(P.gt(10)))
         stars ← movie.start.inE(Rated).value(Stars).mean
       } yield (movie.value2(Name), stars)
 
-      val top10 = movieAndRatings.orderBy(_._2, Order.decr)
-      // val top10 = movieAndRatings.order.by(_._2)
-        .limit(10).toList.toMap
+      val top10 = movieAndRatings
+        .orderBy(_._2, Order.decr)
+        .limit(10)
+        .toList.toMap
 
-      println(top10)
-
-      // top10 should contain("Sanjuro" → 4.61)
-      // top10 should contain("Rear Window" → 4.48)
-
-      // val avgRatings: List[JMap[String, Any]] =
-      //   g.V.hasLabel(Movie).as("a", "b")
-      //     .where(_.inE(Rated).count().is(P.gt(10)))
-      //     .select("a", "b")
-      //     .by("name")
-      //     .by(__.inE(Rated).values("stars").mean())
-      //     .order.by(__.select("b"), Order.decr)
-      //     .limit(10)
-      //     .toList
-
-      // assertMapEntry("Sanjuro", 4.61)
-      // assertMapEntry("Rear Window", 4.48)
-
-      // def assertMapEntry(name: String, value: Double) = {
-      //   val map = avgRatings.find(_.get("a") == name).get
-      //   map.get("b").asInstanceOf[Double] shouldBe value +- 0.1
-      // }
+      top10("Sanjuro").toDouble shouldBe 4.61 +- 0.1d
+      top10("Rear Window").toDouble shouldBe 4.48 +- 0.1d
     }
 
   "Which programmers like Die Hard and what other movies do they like?" +
