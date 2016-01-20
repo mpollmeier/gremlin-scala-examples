@@ -106,89 +106,68 @@ class MovieLensSpec extends WordSpec with Matchers {
   }
 
   "For each genre vertex, emit a map of its name and the number of movies it represents" in {
-    val genreMovieCounts =
-      g.V.hasLabel(Genre).as("a", "b")
-        .select("a", "b")
-        .by("name")
-        .by(__.inE(HasGenre).count)
-        .toList
+    val traversal = for {
+      genre ← g.V.hasLabel(Genre)
+      count ← genre.start.inE(HasGenre).count
+    } yield (genre.value2(Name), count)
+
+    val genreMovieCounts = traversal.toMap
 
     genreMovieCounts should have size 18
-    assertGenreMovieCount("Animation", 99)
-    assertGenreMovieCount("Drama", 1405)
-
-    def assertGenreMovieCount(genre: String, count: Int) = {
-      val map = genreMovieCounts.find(_.get("a") == genre).get
-      map.get("b") shouldBe count
-    }
+    genreMovieCounts should contain("Animation" → 99)
+    genreMovieCounts should contain("Drama" → 1405)
   }
 
   "For each movie, get its name and mean rating (or 0 if no ratings). Order by average rating and emit top 10." in {
-    val avgRatings =
-      g.V.hasLabel(Movie).as("a", "b")
-        .select("a", "b")
-        .by("name")
-        .by(
-          __.coalesce(
-          __.inE(Rated).values("stars"),
-          __.constant(0)
-        ).mean
-        )
-        .order.by(__.select("b"), Order.decr)
-        .limit(10)
-        .toList
+    val traversal = for {
+      movie ← g.V.hasLabel(Movie)
+      stars ← movie.start.inE(Rated).value(Stars).mean
+    } yield (movie.value2(Name), stars)
 
-    assertMapEntry("Lured", 5)
-    assertMapEntry("Lamerica", 4.75)
+    val avgRatings = traversal.toMap
 
-    def assertMapEntry(name: String, value: Number) = {
-      val map = avgRatings.find(_.get("a") == name).get
-      map.get("b") shouldBe value
-    }
+    avgRatings should contain("Lured" → 5)
+    avgRatings should contain("Lamerica" → 4.75)
   }
 
   "For each movie with at least 11 ratings, emit a map of its name and average rating. " +
     "Sort the maps in decreasing order by their average rating. Emit the first 10 maps (i.e. top 10)." in {
-      val avgRatings: List[JMap[String, Any]] =
-        g.V.hasLabel(Movie).as("a", "b")
-          .where(_.inE(Rated).count().is(P.gt(10)))
-          .select("a", "b")
-          .by("name")
-          .by(__.inE(Rated).values("stars").mean())
-          .order.by(__.select("b"), Order.decr)
-          .limit(10)
-          .toList
+      val movieAndRatings = for {
+        movie ← g.V.hasLabel(Movie)
+                  .where(_.inE(Rated).count().is(P.gt(10)))
+        stars ← movie.start.inE(Rated).value(Stars).mean
+      } yield (movie.value2(Name), stars)
 
-      assertMapEntry("Sanjuro", 4.61)
-      assertMapEntry("Rear Window", 4.48)
+      val top10 = movieAndRatings
+        .orderBy(_._2, Order.decr)
+        .limit(10)
+        .toMap
 
-      def assertMapEntry(name: String, value: Double) = {
-        val map = avgRatings.find(_.get("a") == name).get
-        map.get("b").asInstanceOf[Double] shouldBe value +- 0.1
-      }
+      top10("Sanjuro").toDouble shouldBe 4.61 +- 0.1d
+      top10("Rear Window").toDouble shouldBe 4.48 +- 0.1d
     }
 
   "Which programmers like Die Hard and what other movies do they like?" +
     "Group and count the movies by their name. Sort the group count map in decreasing order by the count." in {
-      val counts: JMap[String, JLong] =
-        g.V.has(Movie, Name, "Die Hard").as("a")
-          .inE(Rated).has(Stars, 5).outV
-          .where(_.out(HasOccupation).has(Name, "programmer"))
-          .outE(Rated).has(Stars, 5).inV
-          .where(P.neq("a"))
-          .map(_.value2(Name))
-          .groupCount
-          .order(Scope.local).by(Order.valueDecr)
-          .limit(Scope.local, 10)
-          .head
+      val dieHard: Vertex = g.V.has(Movie, Name, "Die Hard").head
 
-      counts.get("Braveheart") shouldBe 24
-      counts.get("Star Wars: Episode V - The Empire Strikes Back") shouldBe 36
+      val popularMovies = for {
+        programmer5Stars <- dieHard.start.inE(Rated).has(Stars, 5).outV
+                            .where(_.out(HasOccupation).has(Name, "programmer"))
+        otherMovie <-  programmer5Stars.start.outE(Rated).has(Stars, 5).inV
+                          .filterNot(_ == dieHard)
+      } yield otherMovie.value2(Name)
+
+      val counts: Map[String, JLong] = popularMovies.groupCount.head.toMap
+      val top10 = counts.toList.sortBy(_._2).reverse.take(10).toMap
+
+      counts("Braveheart") shouldBe 24
+      counts("Star Wars: Episode V - The Empire Strikes Back") shouldBe 36
     }
 
   "What 80's action movies do 30-something programmers like?" +
     "Group count the movies by their name and sort the group count map in decreasing order by value." in {
-      val counts: JMap[String, JLong] =
+      val counts: Map[String, JLong] =
         g.V
           .`match`(
             __.as("a").hasLabel(Movie),
@@ -202,20 +181,19 @@ class MovieLensSpec extends WordSpec with Matchers {
           )
           .select[Vertex]("a")
           .map(_.value[String]("name"))
-          .groupCount()
-          .order(Scope.local).by(Order.valueDecr)
-          .limit(Scope.local, 10)
-          .head
+          .groupCount().head.toMap
 
-      counts.get("Raiders of the Lost Ark") shouldBe 26
-      counts.get("Star Wars: Episode V - The Empire Strikes Back") shouldBe 26
-      counts.get("Terminator, The") shouldBe 23
-      counts.get("Star Wars: Episode VI - Return of the Jedi") shouldBe 22
-      counts.get("Princess Bride, The") shouldBe 19
-      counts.get("Aliens") shouldBe 18
-      counts.get("Indiana Jones and the Last Crusade") shouldBe 11
-      counts.get("Star Trek: The Wrath of Khan") shouldBe 10
-      counts.get("Abyss, The") shouldBe 9
+      val top10 = counts.toList.sortBy(_._2).reverse.take(10).toMap
+
+      top10("Raiders of the Lost Ark") shouldBe 26
+      top10("Star Wars: Episode V - The Empire Strikes Back") shouldBe 26
+      top10("Terminator, The") shouldBe 23
+      top10("Star Wars: Episode VI - Return of the Jedi") shouldBe 22
+      top10("Princess Bride, The") shouldBe 19
+      top10("Aliens") shouldBe 18
+      top10("Indiana Jones and the Last Crusade") shouldBe 11
+      top10("Star Trek: The Wrath of Khan") shouldBe 10
+      top10("Abyss, The") shouldBe 9
     }
 
   // TODO: fix - group step behaviour changed
