@@ -167,7 +167,7 @@ class MovieLensSpec extends WordSpec with Matchers {
 
   "What 80's action movies do 30-something programmers like?" +
     "Group count the movies by their name and sort the group count map in decreasing order by value." in {
-      val counts: JMap[String, JLong] =
+      val counts: Map[String, JLong] =
         g.V
           .`match`(
             __.as("a").hasLabel(Movie),
@@ -181,20 +181,19 @@ class MovieLensSpec extends WordSpec with Matchers {
           )
           .select[Vertex]("a")
           .map(_.value[String]("name"))
-          .groupCount()
-          .order(Scope.local).by(Order.valueDecr)
-          .limit(Scope.local, 10)
-          .head
+          .groupCount().head.toMap
 
-      counts.get("Raiders of the Lost Ark") shouldBe 26
-      counts.get("Star Wars: Episode V - The Empire Strikes Back") shouldBe 26
-      counts.get("Terminator, The") shouldBe 23
-      counts.get("Star Wars: Episode VI - Return of the Jedi") shouldBe 22
-      counts.get("Princess Bride, The") shouldBe 19
-      counts.get("Aliens") shouldBe 18
-      counts.get("Indiana Jones and the Last Crusade") shouldBe 11
-      counts.get("Star Trek: The Wrath of Khan") shouldBe 10
-      counts.get("Abyss, The") shouldBe 9
+      val top10 = counts.toList.sortBy(_._2).reverse.take(10).toMap
+
+      top10("Raiders of the Lost Ark") shouldBe 26
+      top10("Star Wars: Episode V - The Empire Strikes Back") shouldBe 26
+      top10("Terminator, The") shouldBe 23
+      top10("Star Wars: Episode VI - Return of the Jedi") shouldBe 22
+      top10("Princess Bride, The") shouldBe 19
+      top10("Aliens") shouldBe 18
+      top10("Indiana Jones and the Last Crusade") shouldBe 11
+      top10("Star Trek: The Wrath of Khan") shouldBe 10
+      top10("Abyss, The") shouldBe 9
     }
 
   // TODO: fix - group step behaviour changed
