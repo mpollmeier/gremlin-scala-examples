@@ -17,7 +17,7 @@ A collection of example projects and recipies for [Gremlin-Scala](https://github
 
 * [Simple traversal](neo4j/src/test/scala/SimpleSpec.scala)
 * [Indexes](neo4j/src/test/scala/IndexSpec.scala)
-* [Shortest path](neo4j/src/test/scala/ShortestPathSpec.scala) - [Blog post](http://www.michaelpollmeier.com/2014/12/27/gremlin-scala-shortest-path/)
+* [Shortest path](neo4j/src/test/scala/ShortestPathSpec.scala) - [Blog post](http://www.michaelpollmeier.com/2014/12/27/gremlin-scala-shortest-path)
 
 ### Titan
 
