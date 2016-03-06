@@ -8,8 +8,8 @@ scalaVersion := "2.11.7"
 lazy val root = project.in(file(".")).enablePlugins(PlayScala)
 
 libraryDependencies ++= Seq(
-  "com.michaelpollmeier" %% "gremlin-scala" % "3.1.0-incubating",
-  "com.michaelpollmeier" % "orientdb-gremlin" % "3.1.0-incubating.0",
+  "com.michaelpollmeier" %% "gremlin-scala" % "3.1.1-incubating.0",
+  "com.michaelpollmeier" % "orientdb-gremlin" % "3.1.1-incubating.0",
   "org.scalatest" %% "scalatest" % "2.2.5" % Test
 )
 resolvers += Resolver.mavenLocal
