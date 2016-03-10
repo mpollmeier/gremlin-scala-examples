@@ -1,7 +1,7 @@
 name := "gremlin-scala-examples-orientdb"
 organization := "com.michaelpollmeier"
 version := "1.0.0-SNAPSHOT"
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
 // for some weired classloader issue we have to load this within a play app
 // otherwise we get a java.lang.NoClassDefFoundError: Could not initialize class com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal
