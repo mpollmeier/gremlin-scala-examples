@@ -1,7 +1,7 @@
 name := "gremlin-scala-examples-orientdb"
 organization := "com.michaelpollmeier"
 version := "1.0.0-SNAPSHOT"
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
   "com.michaelpollmeier" %% "gremlin-scala" % "3.1.1-incubating.0",
