@@ -196,13 +196,12 @@ class MovieLensSpec extends WordSpec with Matchers {
       top10("Abyss, The") shouldBe 9
     }
 
-  // TODO: fix - group step behaviour changed
-  "What is the most liked movie in each decade?" ignore {
+  "What is the most liked movie in each decade?" in {
     val counts: JMap[Integer, String] = g.V()
       .hasLabel(Movie)
       .where(_.inE(Rated).count().is(P.gt(10)))
-      .group { v ⇒
-        val year = v.value2(Year)
+      .groupBy { movie =>
+        val year = movie.value2(Year)
         val decade = (year / 10)
         (decade * 10): Integer
       }
@@ -214,7 +213,6 @@ class MovieLensSpec extends WordSpec with Matchers {
         }
         highestRatedByDecade.mapValues(_.value2(Name))
       }
-      .order(Scope.local).by(Order.keyIncr)
       .head
 
     counts.get(1910) shouldBe "Daddy Long Legs"
