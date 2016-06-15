@@ -34,7 +34,7 @@ class MovieLensSpec extends WordSpec with Matchers {
   }
   import Label._
 
-  val g: ScalaGraph[TinkerGraph] = {
+  val g: ScalaGraph = {
     val graph = TinkerGraph.open
     graph.io(gryo()).readGraph("src/test/resources/movie-lens.kryo")
     graph.asScala

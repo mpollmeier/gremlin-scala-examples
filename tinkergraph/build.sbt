@@ -5,9 +5,9 @@ scalaVersion := "2.11.8"
 fork in Test := true
 
 libraryDependencies ++= Seq(
-  "com.michaelpollmeier" %% "gremlin-scala" % "3.1.1-incubating.2",
-  "org.apache.tinkerpop" % "tinkergraph-gremlin" % "3.1.1-incubating" exclude("org.slf4j", "slf4j-log4j12"),
-  "org.scalatest" %% "scalatest" % "2.2.5" % Test
+  "com.michaelpollmeier" %% "gremlin-scala" % "3.2.0-incubating.0",
+  "org.apache.tinkerpop" % "tinkergraph-gremlin" % "3.2.0-incubating" exclude("org.slf4j", "slf4j-log4j12"),
+  "org.scalatest" %% "scalatest" % "2.2.6" % Test
 )
 
 resolvers += Resolver.mavenLocal
