@@ -4,9 +4,9 @@ version := "1.0.0-SNAPSHOT"
 scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
-  "com.michaelpollmeier" %% "gremlin-scala" % "3.1.0-incubating",
-  "org.apache.tinkerpop" % "neo4j-gremlin" % "3.1.0-incubating",
-  "org.neo4j" % "neo4j-tinkerpop-api-impl" % "0.3-2.3.0",
+  "com.michaelpollmeier" %% "gremlin-scala" % "3.2.1.0",
+  "org.apache.tinkerpop" % "neo4j-gremlin" % "3.2.1",
+  "org.neo4j" % "neo4j-tinkerpop-api-impl" % "0.4-3.0.3",
   "org.slf4j" % "slf4j-simple" % "1.7.12",
   "org.scalatest" %% "scalatest" % "2.2.5" % "test"
 )

@@ -44,7 +44,7 @@ class ShortestPathSpec extends WordSpec with Matchers {
     println(s"finding shortest routes from auckland ($auckland) to cape reinga ($capeReinga)")
     val startTime = System.currentTimeMillis
 
-    val paths = auckland.asScala
+    val paths = auckland.asScala.start
       .repeat(_.outE.inV.simplePath)
       .until(_.is(capeReinga.vertex))
       .path

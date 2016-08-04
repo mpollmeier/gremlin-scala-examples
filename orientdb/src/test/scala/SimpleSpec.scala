@@ -65,7 +65,7 @@ class SimpleSpec extends WordSpec with Matchers {
       val config = new BaseConfiguration()
       config.setProperty("type", "UNIQUE")
       config.setProperty("keytype", OType.STRING)
-      graph.asJava.createVertexIndex(key.value, MyLabel, config)
+      graphAsJava.createVertexIndex(key.value, MyLabel, config)
       graph + (MyLabel, key -> indexedValue)
 
       graph.V
@@ -176,7 +176,7 @@ class SimpleSpec extends WordSpec with Matchers {
       graph.addVertex()
     }
 
-    val results: Seq[_] = graph.asJava.executeSql("select from V limit 10") match {
+    val results: Seq[_] = graphAsJava.executeSql("select from V limit 10") match {
       case lst: JArrayList[_] ⇒ lst.toSeq
       case r: OResultSet[_]   ⇒ r.iterator().toSeq
       case other              ⇒ println(other.getClass()); println(other); ???
@@ -186,7 +186,8 @@ class SimpleSpec extends WordSpec with Matchers {
 
   trait Fixture {
     val MyLabel = "mylabel"
-    val graph = new OrientGraphFactory(s"memory:test-${math.random}").getNoTx().asScala
+    val graphAsJava: OrientGraph = new OrientGraphFactory(s"memory:test-${math.random}").getNoTx()
+    val graph = graphAsJava.asScala
   }
 
   trait TinkerpopFixture {
