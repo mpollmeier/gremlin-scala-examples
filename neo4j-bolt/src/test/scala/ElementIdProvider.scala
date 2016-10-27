@@ -4,6 +4,7 @@ import com.steelbridgelabs.oss.neo4j.structure.Neo4JElementIdProvider
 
 import java.util.Objects
 import java.util.concurrent.atomic.AtomicLong
+import org.neo4j.driver.internal.InternalNode
 import org.neo4j.driver.v1.types.Entity
 
 object ElementIdProvider {
@@ -30,8 +31,10 @@ class ElementIdProvider extends Neo4JElementIdProvider[Long] {
     else throw new IllegalArgumentException(String.format("Expected an id that is convertible to Long but received %s", id.getClass()))
   }
 
-  def get(entity: Entity): Long = ???
+  def get(entity: Entity): Long =
+    entity match {
+      case node: InternalNode => node.id
+  }
 
   def matchPredicateOperand(alias: String): String = s"$alias.$IdFieldName"
-
 }

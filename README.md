@@ -19,6 +19,9 @@ A collection of example projects and recipies for [Gremlin-Scala](https://github
 * [Indexes](neo4j/src/test/scala/IndexSpec.scala)
 * [Shortest path](neo4j/src/test/scala/ShortestPathSpec.scala) - [Blog post](http://www.michaelpollmeier.com/2014/12/27/gremlin-scala-shortest-path)
 
+### Neo4j Bolt protocol
+* [Simple traversal](neo4j-bolt/src/test/scala/SimpleSpec.scala)
+
 ### Titan
 
 * [Simple traversal](titan/src/test/scala/SimpleSpec.scala)
