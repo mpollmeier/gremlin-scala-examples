@@ -10,7 +10,7 @@ libraryDependencies ++= Seq(
 	"com.thinkaurelius.titan" % "titan-core" % titanV,
 	// "com.thinkaurelius.titan" % "titan-cassandra" % titanV,
 	// "com.thinkaurelius.titan" % "titan-es" % titanV,
-  "org.scalatest" %% "scalatest" % "2.2.5" % "test"
+  "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 )
 
 resolvers += Resolver.mavenLocal
