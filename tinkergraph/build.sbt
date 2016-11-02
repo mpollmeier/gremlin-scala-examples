@@ -7,7 +7,7 @@ fork in Test := true
 libraryDependencies ++= Seq(
   "com.michaelpollmeier" %% "gremlin-scala" % "3.2.3.1",
   "org.apache.tinkerpop" % "tinkergraph-gremlin" % "3.2.3",
-  "org.scalatest" %% "scalatest" % "2.2.6" % Test
+  "org.scalatest" %% "scalatest" % "3.0.0" % Test
 )
 
 resolvers += Resolver.mavenLocal
