@@ -4,7 +4,7 @@ version := "1.0.0-SNAPSHOT"
 scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
-  "com.michaelpollmeier" %% "gremlin-scala" % "3.2.3.1",
+  "com.michaelpollmeier" %% "gremlin-scala" % "3.2.4.0",
   "org.apache.tinkerpop" % "neo4j-gremlin" % "3.2.3" exclude("com.github.jeremyh", "jBCrypt"), // travis can't find jBCrypt...
   "org.neo4j" % "neo4j-tinkerpop-api-impl" % "0.4-3.0.3",
   "org.slf4j" % "slf4j-simple" % "1.7.21",
