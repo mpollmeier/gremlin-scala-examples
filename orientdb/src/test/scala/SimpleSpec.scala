@@ -65,7 +65,7 @@ class SimpleSpec extends WordSpec with Matchers {
       val config = new BaseConfiguration()
       config.setProperty("type", "UNIQUE")
       config.setProperty("keytype", OType.STRING)
-      graphAsJava.createVertexIndex(key.value, MyLabel, config)
+      graphAsJava.createVertexIndex(key.name, MyLabel, config)
       graph + (MyLabel, key -> indexedValue)
 
       graph.V
