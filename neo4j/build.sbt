@@ -1,7 +1,7 @@
 name := "gremlin-scala-examples-neo4j"
 organization := "com.michaelpollmeier"
 version := "1.0.0-SNAPSHOT"
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.1"
 
 libraryDependencies ++= Seq(
   "com.michaelpollmeier" %% "gremlin-scala" % "3.2.4.0",

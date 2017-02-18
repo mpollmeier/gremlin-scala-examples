@@ -1,8 +1,8 @@
 #!/bin/bash
 set -x #verbose
 
-for project in `ls -d */`; do
-# for project in neo4j neo4j-bolt orientdb tinkergraph titan; do
+# neo4j-bolt depends on running neo4j locally
+for project in neo4j orientdb tinkergraph titan; do
     cd $project
     sbt clean test
     cd ..

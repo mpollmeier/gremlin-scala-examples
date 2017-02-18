@@ -1,7 +1,7 @@
 name := "gremlin-scala-examples-tinkergraph"
 organization := "com.michaelpollmeier"
 version := "1.0.0-SNAPSHOT"
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.1"
 fork in Test := true
 
 libraryDependencies ++= Seq(
