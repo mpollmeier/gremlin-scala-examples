@@ -1,14 +1,14 @@
 name := "gremlin-scala-examples-tinkergraph"
 organization := "com.michaelpollmeier"
-version := "1.0.0-SNAPSHOT"
 scalaVersion := "2.12.1"
-fork in Test := true
 
 libraryDependencies ++= Seq(
-  "com.michaelpollmeier" %% "gremlin-scala" % "3.2.4.0",
-  "org.apache.tinkerpop" % "tinkergraph-gremlin" % "3.2.3",
-  "org.scalatest" %% "scalatest" % "3.0.0" % Test
+  "com.michaelpollmeier" %% "gremlin-scala" % "3.2.4.8",
+  "org.apache.tinkerpop" % "tinkergraph-gremlin" % "3.2.4",
+  "org.slf4j" % "slf4j-nop" % "1.7.25" % Test,
+  "org.scalatest" %% "scalatest" % "3.0.1" % Test
 )
 
+fork in Test := true
 resolvers += Resolver.mavenLocal
 resolvers += "Apache public" at "https://repository.apache.org/content/groups/public/"

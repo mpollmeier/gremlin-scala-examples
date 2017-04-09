@@ -1,10 +1,11 @@
 import com.orientechnologies.orient.core.metadata.schema.OType
 import com.orientechnologies.orient.core.sql.query.OResultSet
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal
 import gremlin.scala._
 import java.util.{ArrayList => JArrayList}
 import org.apache.commons.configuration.BaseConfiguration
 import org.apache.tinkerpop.gremlin.orientdb._
-import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal
+import org.apache.tinkerpop.gremlin.process.traversal.P
 import org.scalatest.{Matchers, WordSpec}
 import scala.collection.JavaConversions._
 
@@ -166,7 +167,7 @@ class SimpleSpec extends WordSpec with Matchers {
     }
 
     "filter" in new TinkerpopFixture {
-      def traversal = graph.V(marko.id).out.filter(_.property(Age).orElse(0) > 30)
+      def traversal = graph.V(marko.id).out.filter(_.value(Age).is(P.gt(30)))
       traversal.value[String]("name").toSet shouldBe Set("josh")
     }
   }

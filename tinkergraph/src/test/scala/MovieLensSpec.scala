@@ -155,7 +155,7 @@ class MovieLensSpec extends WordSpec with Matchers {
         programmer5Stars <- dieHard.start.inE(Rated).has(Stars, 5).outV
                             .where(_.out(HasOccupation).has(Name, "programmer"))
         otherMovie <-  programmer5Stars.start.outE(Rated).has(Stars, 5).inV
-                          .filterNot(_ == dieHard)
+                          .filter(_.is(P.neq(dieHard)))
       } yield otherMovie.value2(Name)
 
       val counts: Map[String, JLong] = popularMovies.groupCount.head.toMap
