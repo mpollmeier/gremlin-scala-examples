@@ -4,7 +4,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.Path
 import scala.util.Random
 import collection.JavaConversions._
 import org.scalatest._
-import org.apache.tinkerpop.gremlin.process.traversal.P
 
 // calculate the shortest path while travelling New Zealand
 // http://www.michaelpollmeier.com/2014/12/27/gremlin-scala-shortest-path/

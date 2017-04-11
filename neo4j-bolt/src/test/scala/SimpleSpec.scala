@@ -6,7 +6,6 @@ import gremlin.scala._
 import org.neo4j.driver.v1.{Driver, GraphDatabase}
 import org.scalatest._
 import scala.util.Random
-import org.apache.tinkerpop.gremlin.process.traversal.P
 
 // to start neo4j with bolt protocol first run:
 // docker run --publish=7474:7474 --publish=7687:7687 --volume=/tmp/neo4j/data:/data --volume=/tmp/neo4j/logs:/logs neo4j:3.0

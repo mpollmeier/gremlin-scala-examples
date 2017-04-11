@@ -5,7 +5,6 @@ import gremlin.scala._
 import java.util.{ArrayList => JArrayList}
 import org.apache.commons.configuration.BaseConfiguration
 import org.apache.tinkerpop.gremlin.orientdb._
-import org.apache.tinkerpop.gremlin.process.traversal.P
 import org.scalatest.{Matchers, WordSpec}
 import scala.collection.JavaConversions._
 
