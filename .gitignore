@@ -27,3 +27,5 @@ project/plugins/project/
 .lib-src
 
 Playground.scala
+
+.idea
