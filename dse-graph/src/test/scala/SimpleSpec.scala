@@ -38,8 +38,8 @@ class SimpleSpec extends WordSpec with Matchers {
       vertices shouldBe List(marko, vadas)
     }
 
-    "bulk load many vertices in one traversal" in fixture { g =>
-      logger.info("Loading 50,000 vertices across 100 traversals")
+    "bulk load many vertices" in fixture { g =>
+      logger.info("Loading 50,000 vertices across 500 traversals")
 
       // convenience type for representing a graph with vertex being current end point.
       type VTraversal = GremlinScala[Vertex, HNil]
@@ -49,7 +49,7 @@ class SimpleSpec extends WordSpec with Matchers {
         logger.info("Loading vertices {} to {}", range.start, range.end)
         // Build a traversal with addV for each range value.  This is the most efficient way to load
         // a lot of data using a traversal based API, but we realize this is not most efficient as it takes
-        // 50ms per batch (after initial batch), creates a giant call back and sends over a lot of data.
+        // 10-40ms per batch (after initial batch), creates a giant call back and sends over a lot of data.
         // https://datastax-oss.atlassian.net/browse/JAVA-1311 for future work.
         val t = range.aggregate[Option[VTraversal]](None)((t, i) => t match {
           case Some(traversal) => Some(traversal.addV(Person).property(Name, s"$i").property(Age, i))
@@ -58,8 +58,8 @@ class SimpleSpec extends WordSpec with Matchers {
         t.get.iterate()
       }
 
-      // create 50k vertices, 500 per traversal with 100 total traversals
-      (0 until 100).map(i => i * 500 until i * 500 + 500).foreach(load)
+      // create 50k vertices, 100 per traversal with 500 total traversals
+      (0 until 500).map(i => i * 100 until i * 100 + 100).foreach(load)
 
       // 50k vertices should have been created
       val count = g.V().count().head()
