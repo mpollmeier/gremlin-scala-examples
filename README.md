@@ -22,6 +22,13 @@ A collection of example projects and recipies for [Gremlin-Scala](https://github
 ### Neo4j Bolt protocol
 * [Simple traversal](neo4j-bolt/src/test/scala/SimpleSpec.scala)
 
+### DSE graph
+Note: to start DSE, first run: `docker run --name dseg51 -p 9042:9042 -d luketillman/datastax-enterprise:5.1.0 -g`
+To stop DSE, run `docker stop dseg51`.
+To start it again, run `docker start dseg51`.
+* [Simple traversal, bulk scenario](dse-graph/src/test/scala/SimpleSpec.scala)
+
+
 ### Titan
 
 * [Simple traversal](titan/src/test/scala/SimpleSpec.scala)
