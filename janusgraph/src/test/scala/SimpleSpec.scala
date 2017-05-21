@@ -1,11 +1,17 @@
-import org.apache.tinkerpop.gremlin.structure.T
 import gremlin.scala._
-import org.scalatest._
+import org.scalatest.{Matchers, WordSpec}
+import org.janusgraph.core.JanusGraphFactory
+import org.janusgraph.core.JanusGraph
+import org.apache.commons.configuration.BaseConfiguration
 
-class SimpleSpec extends FlatSpec with Matchers with InMemoryConnect {
+class SimpleSpec extends WordSpec with Matchers {
 
-  "Gremlin-Scala" should "connect to Titan database, pull out Saturn's keys and shutdown cleanly" in {
-    val graph = connect().asScala
+  "connect to janusgraph, pull out Saturn's keys and shutdown cleanly" in {
+    val conf = new BaseConfiguration()
+    conf.setProperty("storage.backend","inmemory")
+    val graph = JanusGraphFactory.open(conf)
+    val scalaGraph = graph.asScala
+
     val Name = Key[String]("name")
     val Planet = "planet"
     val Saturn = "saturn"

@@ -29,9 +29,8 @@ To start it again, run `docker start dseg51`.
 * [Simple traversal, bulk scenario](dse-graph/src/test/scala/SimpleSpec.scala)
 
 
-### Titan
-
-* [Simple traversal](titan/src/test/scala/SimpleSpec.scala)
+### Janusgraph
+* [Simple traversal](janusgraph/src/test/scala/SimpleSpec.scala)
 
 ## Usage
 First install jdk 8 and configure it to be your `JAVA_HOME` and in your path (check with `echo $JAVA_HOME` and `java -version`). 
@@ -45,6 +44,6 @@ sbt test
 cd neo4j
 sbt test
 
-cd titan
+cd janusgraph
 sbt test
 ```
