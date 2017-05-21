@@ -2,10 +2,10 @@ language: scala
 jdk:
   - oraclejdk8
 scala:
-  - 2.12.1
+  - 2.12.2
 script:
   - export SBT_OPTS="-Xms512M -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled"
-  - cd neo4j ; sbt clean test
+  - cd tinkergraph ; sbt clean test
   - cd ../orientdb ; sbt clean test
-  - cd ../titan ; sbt clean test
-  - cd ../tinkergraph ; sbt clean test
+  - cd ../neo4j ; sbt clean test
+  - cd ../janusgraph ; sbt clean test
