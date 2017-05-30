@@ -50,4 +50,7 @@ sbt test
 
 cd janusgraph
 sbt test
+
+cd sqlg
+sbt testOnly H2Spec
 ```

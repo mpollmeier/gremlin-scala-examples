@@ -9,3 +9,4 @@ script:
   - cd ../orientdb ; sbt clean test
   - cd ../neo4j ; sbt clean test
   - cd ../janusgraph ; sbt clean test
+  - cd ../sqlg ; sbt testOnly H2Spec
