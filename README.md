@@ -28,12 +28,16 @@ To stop DSE, run `docker stop dseg51`.
 To start it again, run `docker start dseg51`.
 * [Simple traversal, bulk scenario](dse-graph/src/test/scala/SimpleSpec.scala)
 
-
 ### Janusgraph
 * [Simple traversal](janusgraph/src/test/scala/SimpleSpec.scala)
 
+### Sqlg
+Note: to run `PostgresSpec`, first run `docker run -e -d POSTGRESQL_PASSWORD=pass -p 9096:5432 postgres`
+* [Simple traversal (H2)](sqlg/src/test/scala/H2Spec.scala)
+* [Simple traversal (PostgreSQL)](sqlg/src/test/scala/PostgresSpec.scala)
+
 ## Usage
-First install jdk 8 and configure it to be your `JAVA_HOME` and in your path (check with `echo $JAVA_HOME` and `java -version`). 
+First install jdk 8 and configure it to be your `JAVA_HOME` and in your path (check with `echo $JAVA_HOME` and `java -version`).
 ```
 cd tinkergraph
 sbt test
