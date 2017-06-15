@@ -3,10 +3,10 @@ organization := "com.michaelpollmeier"
 scalaVersion := "2.12.2"
 
 libraryDependencies ++= Seq(
-  "com.michaelpollmeier" %% "gremlin-scala" % "3.2.4.13",
+  "com.michaelpollmeier" %% "gremlin-scala" % "3.2.4.15",
   "org.janusgraph" % "janusgraph-core" % "0.1.1",
-  "ch.qos.logback" % "logback-classic" % "1.1.9" % Test,
-  "org.scalatest" %% "scalatest" % "3.0.1" % Test
+  "ch.qos.logback" % "logback-classic" % "1.2.3" % Test,
+  "org.scalatest" %% "scalatest" % "3.0.3" % Test
 )
 
 fork in Test := true
