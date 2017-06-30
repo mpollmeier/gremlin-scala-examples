@@ -1,3 +1,6 @@
+import java.util.concurrent.CompletionException
+
+import com.datastax.driver.core.exceptions.InvalidQueryException
 import com.datastax.driver.dse.DseCluster
 import com.datastax.driver.dse.graph.{GraphOptions, SimpleGraphStatement}
 import com.datastax.dse.graph.internal.DseRemoteConnection
@@ -8,14 +11,19 @@ import org.scalatest.{Matchers, WordSpec}
 import org.slf4j.LoggerFactory
 import shapeless.HNil
 
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
+
 
 // to start dse, first run:
-// docker run --name dseg51 -p 9042:9042 -d luketillman/datastax-enterprise:5.1.0 -g
+// docker run --name dseg51 -p 9042:9042 -d luketillman/datastax-enterprise:5.1.1 -g
 // TODO: Automate creation/teardown of container
 class SimpleSpec extends WordSpec with Matchers {
   lazy val logger = LoggerFactory.getLogger(SimpleSpec.getClass)
 
   import SimpleSpec._
+
+  import scala.concurrent.ExecutionContext.Implicits.global
 
   "Gremlin-Scala with DSE Graph" can {
     "create two vertices and connect them" in fixture { g =>
@@ -36,6 +44,30 @@ class SimpleSpec extends WordSpec with Matchers {
       val vertices = g.E().hasLabel(Knows).has(StartTime, 2010).bothV().toList().sortBy(_.property(Name).value)
 
       vertices shouldBe List(marko, vadas)
+    }
+
+    "execute a traversal asynchronously using promise" in fixture { g =>
+      // Basic example that demonstrates chaining asynchronous futures with one another.
+      val future: Future[Option[String]] = for {
+        createdVertex <- g.addV(Person).property(Name, "marko").promise(_.head)
+        name <- g.V(createdVertex.id).value(Name).promise(_.headOption)
+      } yield name
+
+      // longer timeout needed for initial schema creation
+      val name = Await.result(future, 5 seconds)
+    }
+
+    "encounter a failed traversal asynchronously using promise" in fixture { g =>
+      // Basic example that demonstrates that a traversal that encounters an error will fail the resulting exception
+      val future: Future[Vertex] = g.V("invalidid").promise(_.head)
+
+      // CompletionException will be raised when awaiting the future
+      val thrown = intercept[CompletionException] {
+        Await.result(future, 1 seconds)
+      }
+
+      // InvalidQueryException should be the cause since this is the error DSE would have emitted
+      thrown.getCause shouldBe a[InvalidQueryException]
     }
 
     "bulk load many vertices" in fixture { g =>
