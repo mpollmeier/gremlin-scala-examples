@@ -8,21 +8,21 @@ import org.scalatest._
 import scala.util.Random
 
 // to start neo4j with bolt protocol first run:
-// docker run --publish=7474:7474 --publish=7687:7687 --volume=/tmp/neo4j/data:/data --volume=/tmp/neo4j/logs:/logs neo4j:3.0
+// `docker run --env=NEO4J_AUTH=none --publish=7474:7474 --publish=7687:7687 --volume=/tmp/neo4j/data:/data --volume=/tmp/neo4j/logs:/logs neo4j:3.0`
 // then go to http://localhost:7474/ and change the password from `neo4j` to `admin`
 // TODO: add to travis run - would have to make the password change part of the test setup...
 class SimpleSpec extends WordSpec with Matchers {
 
   "Gremlin-Scala with neo4j-bolt" should {
     "create some vertices with properties" in new Fixture {
-      val Number = Key[Int]("number")
-      graph + ("thing", Number → 1)
-      graph + ("thing", Number → 2)
+      val Name = Key[String]("name")
+      graph + ("thing", Name → "name 1")
+      graph + ("thing", Name → "name 2")
       graph.graph.tx.commit()
 
-      val vertices = graph.V.has(label = "thing", key = Number, predicate = P.eq(2)).toList
+      val vertices = graph.V.has(label = "thing", key = Name, predicate = P.eq[String]("name 2")).toList
       vertices.size shouldBe 1
-      vertices.head.property(Number).value shouldBe 2
+      vertices.head.property(Name).value shouldBe "name 2"
 
       graph.close()
     }

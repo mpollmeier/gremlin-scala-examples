@@ -14,9 +14,8 @@ import shapeless.HNil
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-
 // to start dse, first run:
-// docker run --name dseg51 -p 9042:9042 -d luketillman/datastax-enterprise:5.1.1 -g
+// `docker run -p 9042:9042 -d luketillman/datastax-enterprise:5.1.1 -g`
 // TODO: Automate creation/teardown of container
 class SimpleSpec extends WordSpec with Matchers {
   lazy val logger = LoggerFactory.getLogger(SimpleSpec.getClass)

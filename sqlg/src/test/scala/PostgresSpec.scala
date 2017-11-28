@@ -9,7 +9,7 @@ import org.umlg.sqlg.structure.SqlgGraph
 import scala.util.Random
 
 // to start postgres with first run:
-// docker run -e POSTGRESQL_PASSWORD=pass -p 9096:5432 postgres`
+// `docker run -e POSTGRESQL_PASSWORD=pass -p 9096:5432 postgres`
 class PostgresSpec extends WordSpec with Matchers {
 
   "Gremlin-Scala with Sqlg over PostgreSQL" should {
