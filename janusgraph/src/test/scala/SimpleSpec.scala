@@ -16,12 +16,15 @@ class SimpleSpec extends WordSpec with Matchers {
     val Planet = "planet"
     val Saturn = "saturn"
 
-    (1 to 5) foreach { i ⇒
+    (1 to 4) foreach { i ⇒
       graph + (Planet, Name -> s"vertex $i")
     }
-    graph + (Saturn, Name -> Saturn)
+    val saturnV = graph + (Saturn, Name -> Saturn)
+    val sunV = graph + ("sun", Name -> "sun")
+    saturnV --- "orbits" --> sunV
 
     graph.V.count.head shouldBe 6
+    graph.E.count.head shouldBe 1
 
     val traversal = graph.V.value(Name)
     traversal.toList.size shouldBe 6
