@@ -76,7 +76,7 @@ class MovieLensSpec extends WordSpec with Matchers {
   }
 
   "Get the maximum number of movies a single user rated" in {
-    val ratedCounts: GremlinScala[Long, HNil] =
+    val ratedCounts: GremlinScala[Long] =
       for {
         person ← g.V.hasLabel(Person)
         count ← person.outE(Rated).count
