@@ -49,8 +49,15 @@ class SimpleSpec extends WordSpec with Matchers {
       * start it with `bin/janusgraph.sh -v start`
       * note: you can stop it with `bin/janusgraph.sh -v stop`
       */
-    "connecting to remote janusgraph" ignore {
-      val serializer = new GryoMessageSerializerV3d0(GryoMapper.build)
+    "connecting to remote janusgraph" in {
+      import org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerGremlinV2d0
+      import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONMapper
+      import org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry
+
+      val mapper = GraphSONMapper.build.addRegistry(JanusGraphIoRegistry.getInstance).create
+      val serializer = new GraphSONMessageSerializerGremlinV2d0(mapper)
+
+      // val serializer = new GryoMessageSerializerV3d0(GryoMapper.build)
 
 // val serializer = new org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0(GryoMapper.build.addRegistry(org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry.getInstance))
 // val serializer = new org.apache.tinkerpop.gremlin.driver.ser.GryoLiteMessageSerializerV1d0(GryoMapper.build.addRegistry(org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry.getInstance))
