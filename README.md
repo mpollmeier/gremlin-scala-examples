@@ -9,6 +9,10 @@ A collection of example projects and recipies for [Gremlin-Scala](https://github
 
 * [MovieLens - a large collection of traversals](tinkergraph/src/test/scala/MovieLensSpec.scala) based on a [presentation by Marko Rodriguez and Daniel Kuppitz](http://www.slideshare.net/slidarko/the-gremlin-traversal-language)
 
+### Gremlin-Server
+Demonstrate setup with a remote graph db.
+* [Simple traversal](janusgraph/src/test/scala/SimpleSpec.scala)
+
 ### OrientDB
 
 * [Simple traversals](orientdb/src/test/scala/SimpleSpec.scala)
