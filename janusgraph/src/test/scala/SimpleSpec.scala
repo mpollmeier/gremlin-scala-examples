@@ -44,12 +44,15 @@ class SimpleSpec extends WordSpec with Matchers {
       graph.close
     }
 
-    /** prerequisite: 
+    /** await janusgraph 0.3.0 release, this doesn't work yet
+      * see https://github.com/mpollmeier/gremlin-scala/issues/223
+      * 
+      * prerequisite: 
       * download and extract janusgraph-0.2.0-hadoop2
       * start it with `bin/janusgraph.sh -v start`
       * note: you can stop it with `bin/janusgraph.sh -v stop`
       */
-    "connecting to remote janusgraph" in {
+    "connecting to remote janusgraph" ignore {
       import org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerGremlinV2d0
       import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONMapper
       import org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry
