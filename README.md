@@ -11,7 +11,7 @@ A collection of example projects and recipies for [Gremlin-Scala](https://github
 
 ### Gremlin-Server
 Demonstrate setup with a remote graph db.
-* [Simple traversal](janusgraph/src/test/scala/SimpleSpec.scala)
+* [Simple traversal](gremlin-server/src/test/scala/SimpleSpec.scala)
 
 ### OrientDB
 
