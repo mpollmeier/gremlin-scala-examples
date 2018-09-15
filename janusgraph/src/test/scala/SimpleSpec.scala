@@ -1,13 +1,15 @@
 import gremlin.scala._
-import org.scalatest.{Matchers, WordSpec}
-import org.janusgraph.core.JanusGraphFactory
-import org.janusgraph.core.JanusGraph
 import org.apache.commons.configuration.BaseConfiguration
 import org.apache.tinkerpop.gremlin.driver.Cluster
 import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection
 import org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV3d0
 import org.apache.tinkerpop.gremlin.structure.io.gryo.GryoMapper 
 import org.apache.tinkerpop.gremlin.structure.util.empty.EmptyGraph
+import org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry
+import org.janusgraph.core.JanusGraphFactory
+import org.janusgraph.core.JanusGraph
+import org.scalatest.{Matchers, WordSpec}
+
 
 class SimpleSpec extends WordSpec with Matchers {
 
@@ -44,32 +46,17 @@ class SimpleSpec extends WordSpec with Matchers {
       graph.close
     }
 
-    /** await janusgraph 0.3.0 release, this doesn't work yet
-      * see https://github.com/mpollmeier/gremlin-scala/issues/223
-      * 
+    /** 
       * prerequisite: 
-      * download and extract janusgraph-0.2.0-hadoop2
+      * download and extract janusgraph-0.3.0-hadoop2
       * start it with `bin/janusgraph.sh -v start`
       * note: you can stop it with `bin/janusgraph.sh -v stop`
       */
-    "connecting to remote janusgraph" ignore {
-      import org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerGremlinV2d0
-      import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONMapper
-      import org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry
-
-      val mapper = GraphSONMapper.build.addRegistry(JanusGraphIoRegistry.getInstance).create
-      val serializer = new GraphSONMessageSerializerGremlinV2d0(mapper)
-
-      // val serializer = new GryoMessageSerializerV3d0(GryoMapper.build)
-
-// val serializer = new org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0(GryoMapper.build.addRegistry(org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry.getInstance))
-// val serializer = new org.apache.tinkerpop.gremlin.driver.ser.GryoLiteMessageSerializerV1d0(GryoMapper.build.addRegistry(org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry.getInstance))
-// val serializer = new org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerGremlinV1d0(GryoMapper.build.addRegistry(org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistryV1d0.getInstance))
-// val serializer = new org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerGremlinV2d0(GryoMapper.build.addRegistry(org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry.getInstance))
-// val serializer = new org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerV1d0(GryoMapper.build.addRegistry(org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistryV1d0.getInstance))
-
+    "connecting to remote janusgraph" in {
+      val serializer = new GryoMessageSerializerV3d0(GryoMapper.build.addRegistry(JanusGraphIoRegistry.getInstance))
       val cluster = Cluster.build.addContactPoint("localhost").port(8182).serializer(serializer).create
       implicit val graph = EmptyGraph.instance.asScala.configure(_.withRemote(DriverRemoteConnection.using(cluster)))
+
       graph.traversal.V.drop.iterate
 
       val Name = Key[String]("name")
@@ -82,6 +69,9 @@ class SimpleSpec extends WordSpec with Matchers {
 
       graph.V.count.head shouldBe 2
       graph.E.count.head shouldBe 1
+
+      println(graph.V.toList)
+      println(graph.E.toList)
 
       cluster.close()
     }

@@ -1,9 +1,9 @@
 name := "gremlin-scala-examples-tinkergraph"
 organization := "com.michaelpollmeier"
-scalaVersion := "2.12.4"
+scalaVersion := "2.12.6"
 
 libraryDependencies ++= Seq(
-  "com.michaelpollmeier" %% "gremlin-scala" % "3.3.1.1",
+  "com.michaelpollmeier" %% "gremlin-scala" % "3.3.3.4",
   "org.apache.tinkerpop" % "tinkergraph-gremlin" % "3.3.1",
   "org.slf4j" % "slf4j-nop" % "1.7.25" % Test,
   "org.scalatest" %% "scalatest" % "3.0.3" % Test
