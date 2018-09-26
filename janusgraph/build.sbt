@@ -18,5 +18,5 @@ enablePlugins(JavaAppPackaging)
 resolvers ++= Seq(
   Resolver.mavenLocal,
   "Sonatype OSS" at "https://oss.sonatype.org/content/repositories/public",
-  "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
-)
+  "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+  "Oracle Releases" at "http://download.oracle.com/maven")
