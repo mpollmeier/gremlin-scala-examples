@@ -17,27 +17,27 @@ class ShortestPathSpec extends WordSpec with Matchers {
     val dbPath = "target/shortestpath"
     FileUtils.removeAll(dbPath)
     println("opening new empty graph - this takes a moment with neo4j")
-    val graph = Neo4jGraph.open(dbPath).asScala
+    implicit val graph = Neo4jGraph.open(dbPath).asScala
     println("opened empty graph, setting it up now")
 
     // format: OFF
-    val auckland   = graph + (Location, Name → "Auckland")
-    val whangarei  = graph + (Location, Name → "Whangarei")
-    val dargaville = graph + (Location, Name → "Dargaville")
-    val kaikohe    = graph + (Location, Name → "Kaikohe")
-    val kerikeri   = graph + (Location, Name → "Kerikeri")
-    val kaitaia    = graph + (Location, Name → "Kaitaia")
-    val capeReinga = graph + (Location, Name → "Cape Reinga")
+    val auckland   = graph + (Location, Name -> "Auckland")
+    val whangarei  = graph + (Location, Name -> "Whangarei")
+    val dargaville = graph + (Location, Name -> "Dargaville")
+    val kaikohe    = graph + (Location, Name -> "Kaikohe")
+    val kerikeri   = graph + (Location, Name -> "Kerikeri")
+    val kaitaia    = graph + (Location, Name -> "Kaitaia")
+    val capeReinga = graph + (Location, Name -> "Cape Reinga")
 
-    auckland   <-- (Road, Distance → 158) --> whangarei
-    whangarei  <-- (Road, Distance →  85) --> kaikohe
-    kaikohe    <-- (Road, Distance →  82) --> kaitaia
-    kaitaia    <-- (Road, Distance → 111) --> capeReinga
-    whangarei  <-- (Road, Distance →  85) --> kerikeri
-    kerikeri   <-- (Road, Distance →  88) --> kaitaia
-    auckland   <-- (Road, Distance → 175) --> dargaville
-    dargaville <-- (Road, Distance →  77) --> kaikohe
-    kaikohe    <-- (Road, Distance →  36) --> kerikeri
+    auckland   <-- (Road, Distance -> 158) --> whangarei
+    whangarei  <-- (Road, Distance ->  85) --> kaikohe
+    kaikohe    <-- (Road, Distance ->  82) --> kaitaia
+    kaitaia    <-- (Road, Distance -> 111) --> capeReinga
+    whangarei  <-- (Road, Distance ->  85) --> kerikeri
+    kerikeri   <-- (Road, Distance ->  88) --> kaitaia
+    auckland   <-- (Road, Distance -> 175) --> dargaville
+    dargaville <-- (Road, Distance ->  77) --> kaikohe
+    kaikohe    <-- (Road, Distance ->  36) --> kerikeri
     // format: ON
 
     println(s"finding shortest routes from auckland ($auckland) to cape reinga ($capeReinga)")
