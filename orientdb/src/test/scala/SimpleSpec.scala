@@ -1,5 +1,4 @@
 import com.orientechnologies.orient.core.metadata.schema.OType
-import com.orientechnologies.orient.core.sql.query.OResultSet
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal
 import gremlin.scala._
 import java.util.{ArrayList => JArrayList}
@@ -109,7 +108,7 @@ class SimpleSpec extends WordSpec with Matchers {
 
       val v1 = graph + MyLabel
       val v2 = graph + MyLabel
-      v1 --- (MyLabel, Key1 -> "value1", Key2 -> "value2") --> v2
+      v1 --- (MyEdgeLabel, Key1 -> "value1", Key2 -> "value2") --> v2
 
       val e = graph.E.head
       e.value2(Key1) shouldBe "value1"
@@ -176,24 +175,21 @@ class SimpleSpec extends WordSpec with Matchers {
       graph.addVertex()
     }
 
-    val results: Seq[_] = graphAsJava.executeSql("select from V limit 10") match {
-      case lst: JArrayList[_] ⇒ lst.toSeq
-      case r: OResultSet[_]   ⇒ r.iterator().toSeq
-      case other              ⇒ println(other.getClass()); println(other); ???
-    }
-    results should have length 10
+    val results = graphAsJava.executeSql("select from V limit 10")
+    results.size shouldBe 10
   }
 
   trait Fixture {
     val MyLabel = "mylabel"
-    val graphAsJava: OrientGraph = new OrientGraphFactory(s"memory:test-${math.random}").getNoTx()
-    val graph = graphAsJava.asScala
+    val MyEdgeLabel = "myEdgelabel"
+    val graphAsJava: OrientGraph = new OrientGraphFactory(s"memory:test-${newUUID}").getNoTx()
+    implicit val graph = graphAsJava.asScala
   }
 
   trait TinkerpopFixture {
     // val graph = new OrientGraphFactory("remote:localhost/graphtest", "root", "root").getNoTx()
     // val graph = new OrientGraphFactory("plocal:/home/mp/tmp/orientdb-community-2.1-rc5/databases/testgraph", "root", "root").getNoTx()
-    val graph = new OrientGraphFactory(s"memory:test-${math.random}").getNoTx().asScala
+    implicit val graph = new OrientGraphFactory(s"memory:test-${newUUID}").getNoTx().asScala
 
     val Person = "Person"
     val Software = "Person"
@@ -217,4 +213,7 @@ class SimpleSpec extends WordSpec with Matchers {
     josh --- (Created, Weight -> 0.4d) --> lop
     peter --- (Created, Weight -> 0.2d) --> lop
   }
+
+  def newUUID(): String =
+    java.util.UUID.randomUUID.toString.substring(0, 16)
 }
